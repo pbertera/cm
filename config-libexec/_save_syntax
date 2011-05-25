@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# @param $1:		save static part of command
+# @param $2:		optional: local file or scp:// uri of remote location
+
+. ${__cm_lib_dir}/cmlib
+. ${__cm_lib_dir}/cmcheck
+
+# no parameters, OK
+[ ${#@} -eq 1 ] && exit 0
+
+# too many parametes
+if [ ${#@} -gt 2 ]; then
+	__cm_exit_error "too many parameters"
+fi
+
+#is_valid_scp_url "$2"

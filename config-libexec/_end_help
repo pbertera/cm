@@ -1,0 +1,9 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "exit from configuration mode"
+
+__cm_print_help_bottom

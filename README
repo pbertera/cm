@@ -1,0 +1,21 @@
+utente con cm come shell:
+entry in passwd: cm:x:501:501:Configuration Manager:/home/pietro/mysvn/cm:/home/pietro/mysvn/cm/shell.sh
+
+
+**** Struttura:
+
+command branch= percorso fino al comando
+command leaf= nome del comando
+command parameters= tutto quello che segue il command leaf
+
+Es:
+set system hostname ciccio pasticcio
+----------|--------|----------------|
+  branch     leaf      parameters
+
+deve eseguire il comando
+$libexec/system/hostname "ciccio pasticcio"
+
+se salva il valore nel db lo salva in
+
+echo "ciccio pasticcio" > $db/system/hostname

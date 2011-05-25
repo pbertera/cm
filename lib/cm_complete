@@ -1,0 +1,79 @@
+. cmlib
+
+# $1 = dir to list
+__cm_complete_indir()
+{
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	if [ -z "$1" ]; then
+		root="$__cm_libexec_dir"
+	else
+		root="${1}"
+	fi
+	
+	COMPREPLY=()
+	
+	alldir=" "
+	for dir in "$root"/*; do	
+		base=$(basename "$dir")
+		[ "${base:0:1}" != "_" ] && alldir="$alldir $base" 
+	done
+	COMPREPLY=($(compgen -W "$alldir" -- "$cur" ))
+	return 
+}
+
+__cm_complete_command()
+{
+	dirname=$(dirname $1)
+	filename=$(basename $1)
+	command="${dirname}/_${filename}_complete"
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	if [ -x "$command" ]; then
+		complete=$($command) #TODO: fix complete for nocm command
+		if [ -f "${dirname}/_${filename}_nocomplete" ]; then
+			echo 
+			eval $command
+			echo -n "${__cm_prompt}${COMP_WORDS[@]}"
+			return
+		fi
+		COMPREPLY=($(compgen -W "$complete" -- "$cur"))
+	fi
+}
+
+__cm_complete()
+{
+	local cur prev __cm_root_all
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+	opts=${COMP_WORDS[@]:1}
+	opts_path=${__cm_libexec_dir}/${opts// /\/}
+	
+	prev_opts=${COMP_WORDS[@]:1:$((${#COMP_WORDS[@]} - 2))}
+	prev_opts_path=${__cm_libexec_dir}/${prev_opts// /\/}
+	# root of tree
+	#echo $opts_path
+	if [ "$prev" == "cm" ]; then
+		command=""
+		__cm_complete_indir
+		return
+	elif [  -d "$prev_opts_path" ]; then
+		__cm_complete_indir "$prev_opts_path"
+		return
+	# directory in libexec
+	elif [ -d "$opts_path" ]; then
+		__cm_complete_indir "$opts_path"
+		return
+	# file in libexec
+	elif [  -f "$opts_path" ]; then
+		__cm_complete_command "$prev_opts_path"
+		return
+	# file complete
+	elif [  -f "$prev_opts_path" ]; then
+		__cm_complete_command "$prev_opts_path"
+		return
+	fi
+	echo "NOT FOUND"
+	return 0
+}
+

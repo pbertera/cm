@@ -1,0 +1,380 @@
+#!/bin/sh
+
+# print help header
+# @params $@: command name
+__cm_print_help_header()
+{
+	echo
+	echo "-----------------------------------------------"
+	echo "Command Help: $@"
+	echo "-----------------------------------------------"
+	echo
+}
+
+# print help bottom
+# @params $@: command name
+__cm_print_help_bottom()
+{
+	echo
+	echo "-----------------------------------------------"
+}
+
+# print debug information only if __cm_debug var is set
+# @params $@: message to print
+__cm_debug()
+{
+	[ $__cm_debug ] && echo "Debug: $@" 1>&2
+	return 0
+}
+
+# print message in standard error and exit with exit code 1
+# @params $@: Message to print
+__cm_exit_error()
+{
+	echo "Error: $@"  1>&2 
+	exit 1
+}
+
+# return the list of parameters in command
+# params $@: command string
+__cm_command_param()
+{
+	local full_command="$@"
+	local command=$(__cm_command $@)
+	local command_length=${#command}
+	local params=${full_command:${command_length}}
+	echo $params
+}
+
+# return the command name correspondig to command string in $@
+# @params $@: command string
+__cm_command_name()
+{
+	local command_path=$(__cm_command_path $@)
+	echo $(basename "$command_path")
+}
+
+
+# return the full command name excpet pamaeters
+# @params $@: command string
+__cm_command()
+{
+        local cmd="${__cm_libexec_dir}"
+	local command=""
+	OIFS=$IFS
+	IFS=$' '
+        for entry in ${@}; do
+                cmd="$cmd/${entry}"
+		# $cmd don't exist, exit
+		if [ ! -e "$cmd" ]; then 
+			__cm_exit_error "Command not found: $@"
+			__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
+		fi
+		# $cmd is a file: command found, break cycle
+		if [ -f "$cmd" ]; then 
+			command="$command $entry"
+			break
+		fi
+		# $cmd is a direcotry: continue the cycle
+		if [ -d "$cmd" ]; then
+			command="$command $entry"
+		# everything else ??? really necessary ?
+		else
+			__cm_exit_error "Command not found: $@"
+			__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
+		fi
+        done
+	IFS=$IFS
+	if [ ! -f "$cmd" ]; then
+		__cm_exit_error "Command not found: $@"
+		__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
+	fi
+	# remove first space
+	echo "${command/ /}"
+}
+
+# return the command path correspondig to command string in $@
+# @params $@: command string
+__cm_command_path()
+{
+        local cmd="${__cm_libexec_dir}"
+	local command=""
+	OIFS=$IFS
+	IFS=$' '
+        for entry in ${@}; do
+                cmd="$cmd/${entry}"
+		# $cmd don't exist, exit
+		if [ ! -e "$cmd" ]; then
+			__cm_exit_error "Command not found: $@"
+			__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
+		fi
+		# $cmd is a file: command found, break cycle
+		if [ -f "$cmd" ]; then 
+			command="$command $entry"
+			break
+		fi
+		# $cmd is a direcotry: continue the cycle
+		if [ -d "$cmd" ]; then
+			command="$command $entry"
+		# everything else ??? really necessary ?
+		else
+			__cm_exit_error "Command not found: $@"
+			__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
+		fi
+        done
+	IFS=$IFS
+	if [ ! -f "$cmd" ]; then
+		__cm_exit_error "Command not found: $@"
+		__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
+	fi
+	echo "${cmd}"
+}
+
+# return the path of direcotry in libexec dir of command
+# @params $@: command string
+__cm_command_path_dir()
+{
+	local command_path=$(__cm_command_path $@)
+	echo $(dirname "$command_path")
+}
+
+# return 0 if object is a command
+# return 1 if object is not a command
+__cm_is_command()
+{
+	#check path silently
+	command_path=$(__cm_command_path $@)
+	__cm_debug "checking command \"$@\", path: $command_path"
+	[ -e "$command_path" ] && return 0
+	return 1
+}
+
+# return 0 if object is a command branch
+# return 1 if object is not a command branch
+__cm_is_command_branch()
+{
+	#check path silently
+	local branch=$@
+	local command_path="$__cm_libexec_dir"/"${branch// //}"
+	__cm_debug "Checking command branch \"$@\", path: $command_path"
+	[ -d "$command_path" ] && return 0
+	return 1
+}
+
+# get the priority of a command branch
+__cm_get_command_branch_priority()
+{
+	local branch=$@
+	local command_dir="$__cm_libexec_dir"/"${@// //}"
+	if [ -f "${command_dir}/_priority" ]; then
+		cat "$command_dir"/_priority
+	else
+		echo $__cm_default_priority
+		__cm_debug "Priority not found. Priority file: $command_dir/_priority"
+	fi
+}
+
+# get the priority of command
+__cm_get_command_priority()
+{
+	local branch=$@
+	command_dir=$(__cm_command_path_dir $@)
+	command_name=$(__cm_command_name $@)
+	
+	if [ -f "${command_dir}/_${command_name}_priority" ]; then
+		cat "${command_dir}/_${command_name}_priority"
+	else
+		echo $__cm_default_priority
+		__cm_debug "Priority not found. Priority file: ${command_dir}/_${command_name}_priority"
+	fi
+
+	
+}
+##### DATABSE LIBRARY #######
+
+# create branch in database
+__cm_db_create_branch()
+{
+	branch=$@
+	__cm_is_command_branch $branch
+	if [ $? == 0 ]; then
+		local path_in_db="$(__cm_db_branch_to_path $branch)"
+		__cm_debug "Creating branch $path_in_db in database"
+		mkdir -p $path_in_db
+	else
+		__cm_exit_error "Creare branch in db: Command branch not exist: $@"
+	fi
+}
+
+# set leaf in db: the first argument is the value of object
+# others parameters represents the hierarchy path of ojbect: the 
+# parameters between second and penultimate represents the hierarchy path
+# the last parametes represent the property
+__cm_db_set_leaf()
+{
+	local value=$1
+	local branch=${@:2:$((${#@} - 2))}
+	local leaf=${@:${#@}}
+	local path_in_db="$(__cm_db_branch_to_path $branch)"
+	__cm_is_command $branch $leaf
+	if [ $? == 0 ]; then
+		[ -d "$path_in_db" ] || __cm_db_create_branch $branch
+		__cm_debug "Setting leaf $path_in_db/$leaf in database"
+		echo "$value" > "$path_in_db"/"$leaf"
+	else
+		__cm_exit_error "Command not exist: $branch $leaf"
+	fi
+}
+
+# apppend value to leaf in db: the first argument is the value of to append
+# others parameters represents the hierarchy path of ojbect: the 
+# parameters between second and penultimate represents the hierarchy path
+# the last parametes represent the property
+__cm_db_append_leaf()
+{
+	local value=$1
+	local branch=${@:2:$((${#@} - 2))}
+	local leaf=${@:${#@}}
+	
+	local path_in_db="$(__cm_db_branch_to_path $branch)"
+	__cm_is_command $branch $leaf
+	if [ $? == 0 ]; then
+		[ -d "$path_in_db" ] || __cm_db_create_branch $branch
+		__cm_debug "Appending to leaf $path_in_db/$leaf in database"
+		echo "$value" >> "$path_in_db"/"$leaf"
+	else
+		__cm_exit_error "Command not exist: $branch $leaf"
+	fi
+
+}
+
+# get value of a leaf: the arguments represent the full path of leaf
+__cm_db_get_leaf()
+{	
+	local branch="$@"
+	#local leaf_path_in_db="$__cm_db_dir"/"${leaf_path// //}"
+	local path=$(__cm_db_branch_to_path $branch)
+	__cm_db_is_leaf "$branch"
+	if [ $? == 0 ];then 
+		cat "$path"
+	else
+		__cm_exit_error "the configuration leaf \"$branch\" not exist in db"
+	fi
+}
+
+# return a list of branches starting from paramete
+__cm_db_list_branches_sorted()
+{ 
+	branch=${@}
+	start_path=$(__cm_db_branch_to_path $branch)
+	if [ -d "$start_path" ];then
+		for b in $start_path/*; do
+			[ -d "$b" ] || continue
+			branch=$(basename $b)
+			priority=$(__cm_get_command_branch_priority "$@ $branch")
+			ret="$priority:${@} $branch"
+			echo ${ret/: /:}
+		done | sort -n -k1 -t: | cut -d: -f2-
+	else
+		__cm_exit_error "the configuration path \"$branch\" not exist in db"
+	fi
+}
+
+#TODO: use this function
+#TODO: write __cm_db_path_to_banch function
+# return filesystem path for a branch
+__cm_db_branch_to_path()
+{
+	local branch=$@
+	local start_path="$__cm_db_dir"
+	local branch_path=${start_path}/${branch// //}
+	echo $branch_path
+}
+
+# list leaf in a branch sorted
+__cm_db_list_leaf_sorted()
+{
+	local branch=$@
+	local path=$(__cm_db_branch_to_path $branch)
+	for leaf_name in $( ls -1 $path); do
+		__cm_db_is_leaf "$branch $leaf_name"
+		if [ $? == 0 ]; then
+			priority=$(__cm_get_command_priority "$branch $leaf_name")
+			echo "${priority}:$leaf_name"
+			__cm_debug "$leaf_name is a leaf, priority is: $priority"
+		fi
+	done | sort -n -k1 -t: | cut -d: -f2-
+}
+
+# show leaf name and value
+# @param $@ the path in configuration
+__cm_db_show_leaf_sorted()
+{
+	local branch=$@
+	for leaf in $(__cm_db_list_leaf_sorted $branch); do
+		__cm_db_get_leaf "$branch $leaf"
+	done
+}
+
+# return 0 if object is a leaf
+# return 1 if object is not a leaf
+__cm_db_is_leaf()
+{
+	local branch=$@
+	local path=$(__cm_db_branch_to_path $branch)
+	local filename=$(basename $path)
+
+	[ "${filename:0:1}" == "_" ] && return 1
+	[ -f "$path" ] && return 0 	
+}
+
+# return a list of leaf with full path from parameter
+__cm_db_show_tree()
+{
+	local tree=
+	if [ -n "$@" ]; then
+		tree="$@"
+	fi
+	OIFS=$IFS
+	IFS=$'\n'
+	for branch in $(__cm_db_list_branches_sorted $tree); do
+		for leaf_name in $(__cm_db_list_leaf_sorted $branch); do
+			__cm_db_is_leaf "$branch $leaf_name"
+			[ $? == 1 ] && continue
+			val=$(__cm_db_get_leaf "$branch $leaf_name")
+			for v in $val; do
+				__cm_debug "Leaf: $branch ${leaf_name}, value: $v"
+				echo "$branch $leaf_name $v"
+			done
+			[ -z "${val}" ] && echo "$branch $leaf_name"
+		done
+		__cm_db_show_tree $branch
+	done
+	IFS=$OIFS
+}
+	
+# remove leaf from db: the arguments represent the path of leaf
+__cm_db_remove_leaf()
+{
+	local leaf_path=$@
+	local leaf_path_in_db="$__cm_db_dir"/"${leaf_path// //}"
+	if [ -f "$leaf_path_in_db" ]; then
+		rm -f "$leaf_path_in_db"
+	else
+		__cm_exit_error "the configuration path \"$leaf_path\" not exist in db"
+	fi
+
+}
+
+# show configuration
+__cm_show_conf()
+{
+	OIFS=$IFS
+	IFS=$'\n'
+
+	for conf in $(__cm_db_show_tree); do
+        	echo $__cm_bin $conf
+	done
+
+	IFS=$IFS
+}

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# show content in cmdb
+# @param $1: show
+# @param $@: start path
+
+export __cm_libexec_dir=${__cm_base_dir}/config-libexec
+. ${__cm_lib_dir}/cmlib
+
+#OIFS=$IFS
+#IFS=$'\n'
+
+#for conf in $(__cm_db_show_tree); do
+#	echo $__cm_bin $conf
+#done
+
+#IFS=$IFS
+
+__cm_show_conf

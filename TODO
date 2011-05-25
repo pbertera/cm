@@ -1,0 +1,23 @@
+[1] documentare cmlib e fare un howto su come estendere libexec
+[1.1] scrivere scritp di init
+[1.2] pensare ad uno strumento per test automatici
+[2] scrivere tante tante tante tante libexec
+	* gestione parametri di sistema: ip, hostname, dns
+	* openvpn minimale
+	* samba
+	* bacula minimale
+
+[3] fare in modo che sia visibile nel database una proprietà che evidenzi che il parametro è applicato al sistema
+  es: lancio il comando "cm interfaces ethernet eth0 ip 192.168.101.0"
+  il comando "cm show" dovrebbe mostrarmi "interfaces ethernet eth0 ip 192.168.101.0 !!" (!! indica che non è ancora stato committato)
+  dopo il comando "commit" l'ip viene applicato e il simbolo "!!" scompare
+[4] includere dei test di congruenza delle configurazioni: se l'ip del sistema è diverso da quello nel db mi dovrebbe essere segnalato nel comando "cm show" (da integare con il punto 3?)
+[5] gestire il db su un scm (git?)
+[6] pacchettizzare i vari libexec in modo da rendere modulare il sistema
+
+
+DA TESTARE BENE
+
+* verificare paduli con gli spazi nei valori [DONE, need test]
+** sistemare e bugfixare le funzioni __cm_command_param __cm_command_name __cm_command_path __cm_command_path_dir
+   mantenendo come riferimento per distinguere tra command branch, command leaf e command parameters il path del file in libexec [DONE, need test]

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cat << EOF > $__cm_base_dir/setenv-addictional
+export __cm_libexec_dir=$__cm_base_dir/config-libexec
+export __cm_prompt='(config)# '
+export PS1="(config)# "
+EOF

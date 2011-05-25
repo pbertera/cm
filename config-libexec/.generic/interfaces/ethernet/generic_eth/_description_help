@@ -1,0 +1,11 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "set description for interface $3"
+echo 
+echo "Parameter: description text for interface"
+
+__cm_print_help_bottom

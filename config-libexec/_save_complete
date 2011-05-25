@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "<Enter>				Save to system config file"
+echo "<file>				Save to file on local machine"
+echo "scp://<user>:<passwd>@<host>/<file>	Save to file on remote machine"

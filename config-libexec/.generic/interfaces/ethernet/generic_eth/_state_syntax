@@ -1,0 +1,9 @@
+#!/bin/bash
+
+case $5 in
+	active) exit 0
+		;;
+	inactive) exit 0
+		;;
+	*)	exit 1
+esac

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "set ip address of interface $3"
+echo 
+echo "Parameter: ip address in dotted notation example: 192.168.10.1"
+
+__cm_print_help_bottom

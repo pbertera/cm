@@ -1,0 +1,23 @@
+#!/bin/sh
+# set hostname
+# @param $1: hostname value: 	the hostanme
+# @param $2: system:	 	statical part of command
+# @param $3: hostname: 		statical part of command
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+#command_branch_prio=$(__cm_get_command_branch_priority $@)
+#command_priority=$(__cm_get_command_priority $@)
+
+
+if [ $__cm_no_command ]; then
+	__cm_db_remove_leaf system hostname
+else
+	__cm_db_set_leaf "$param" system hostname
+fi

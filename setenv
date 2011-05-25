@@ -1,0 +1,24 @@
+#alias cm=$(pwd -P)/bin/cm
+
+PATH=$PATH:$(pwd -P)/bin
+cd lib
+. cm_complete
+cd ..
+cd bin
+. cmrc
+cd ..
+
+alias dcm='__cm_debug=1 cm'
+alias nocm='__cm_no_command=1 cm'
+alias dnocm='__cm_debug=1 __cm_no_command=1 cm'
+
+complete -F __cm_complete cm
+complete -F __cm_complete dcm
+complete -F __cm_complete nocm
+complete -F __cm_complete dnocm
+
+PS1=$__cm_prompt
+if [ -f "$__cm_base_dir/setenv-addictional" ]; then
+	. "$__cm_base_dir/setenv-addictional"
+fi
+PROMPT_COMMAND=". $__cm_base_dir/setenv"

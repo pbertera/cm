@@ -1,0 +1,22 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+. ${__cm_lib_dir}/cmcheck
+
+
+[ -n "$2" ] && file=__cm_config_db
+is_valid_scp_url "$__cm_config_db"
+
+# is scp url
+if [ "$?" == "0" ];then
+	echo "Saving to $__cm_config_db remote location"
+
+	_tmp_dir=$(mktemp -d "/tmp/cm.XXXXXXXXXXXX")
+	_tmp_file=$(mktemp "$_tmp_dir/cm.XXXXXXXXXXX")
+	__cm_show_conf > "$_tmp_file"
+	scp "${_tmp_file}" ${__cm_config_db:6}
+	rm -rf "$_tmp_dir"
+else
+	echo "Saving configuration to $__cm_config_db file"
+	__cm_show_conf > "$__cm_config_db"
+fi

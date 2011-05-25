@@ -1,0 +1,11 @@
+export __cm_base_dir=/home/pietro/mysvn/cm2/cm
+export __cm_libexec_dir=${__cm_base_dir}/libexec
+export __cm_db_dir=${__cm_base_dir}/db
+export __cm_lib_dir=${__cm_base_dir}/lib
+export __cm_bin_dir=${__cm_base_dir}/bin
+export __cm_bin=cm
+export __cm_prompt="> "
+export __cm_default_priority=999
+export __cm_config_db=${__cm_base_dir}/etc/config.boot
+
+#__cm_debug=1

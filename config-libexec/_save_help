@@ -1,0 +1,13 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "save configuration"
+echo 
+echo "Parameters: <file>|<scp://<user>@<host>:/<file>"
+echo "<file>: 	save configuration locally to <file>"
+echo "scp url: 	copy configuration to host specified"
+
+__cm_print_help_bottom

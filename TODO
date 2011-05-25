@@ -1,3 +1,8 @@
+* sistemare setenv in modo e PROMPT_COMMAND
+* fqdn check in domain syntax
+* applicazione di system/{domain,name-server}
+* fare in modo che alla rimozione di domain e name-server venga aggiornato resolv.conf
+
 [1] documentare cmlib e fare un howto su come estendere libexec
 [1.1] scrivere scritp di init
 [1.2] pensare ad uno strumento per test automatici

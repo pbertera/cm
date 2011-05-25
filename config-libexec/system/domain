@@ -20,4 +20,17 @@ if [ $__cm_no_command ]; then
 	__cm_db_remove_leaf system domain
 else
 	__cm_db_set_leaf "$param" system domain
+
+        #get information from db
+        __cm_db_set_leaf "$param" system domain
+
+        nameserver=$(__cm_db_get_leaf system name-server 2>/dev/null) 
+        [ -n "$nameserver" ] && nameserver="namserver $nameserver"
+
+        cat << EOF > /etc/resolv.conf
+domain $param
+$nameserver
+EOF
+
 fi
+

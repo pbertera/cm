@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# start a dhclient process for interface
+# 
+
+pid_file=/opt/cm/var/run/dhclient.pid
+lease_file=/opt/cm/var/lib/dhclient/dhclient.$1.leases
+daemon=dhclient
+
+. ./common_functions
+
+function usage
+{
+	echo "Usage: $0 {start|stop} iface"
+	exit 1
+}
+
+[ "${#@}" != "2" ] && usage
+
+./cm_list_iface | grep "$2$"
+
+[ "$?" != "0" ] && die "$2 is not a valid interface"
+
+[ -d "$(dirname $pid_file)" ] || mkdir -p $(dirname $pid_file)
+[ -d "$(dirname $lease_file)" ] || mkdir -p $(dirname $lease_file)
+
+
+case $1 in
+start)
+	echo $daemon -pf "$pid_file" -lf "$lease_file" $2
+	;;
+
+stop)
+	pid=$(cat "$pid_file")
+	echo kill -9 $pid
+	;;
+*)
+	usage
+	;;
+	
+esac

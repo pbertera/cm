@@ -3,11 +3,11 @@
 # start a dhclient process for interface
 # 
 
-pid_file=/opt/cm/var/run/dhclient.pid
-lease_file=/opt/cm/var/lib/dhclient/dhclient.$1.leases
-daemon=dhclient
+pid_file=/opt/cm/var/run/dhclient.$2.pid
+lease_file=/opt/cm/var/lib/dhclient/dhclient.$2.leases
+daemon=dhclient3
 
-. ./common_functions
+. $__cm_base_dir/sbin/common_functions
 
 function usage
 {
@@ -17,9 +17,9 @@ function usage
 
 [ "${#@}" != "2" ] && usage
 
-./cm_list_iface | grep "$2$"
+dev=$(cm_list_iface | grep "$2$")
 
-[ "$?" != "0" ] && die "$2 is not a valid interface"
+[ "$dev" != "$2" ] && die "$2 is not a valid interface"
 
 [ -d "$(dirname $pid_file)" ] || mkdir -p $(dirname $pid_file)
 [ -d "$(dirname $lease_file)" ] || mkdir -p $(dirname $lease_file)
@@ -27,12 +27,20 @@ function usage
 
 case $1 in
 start)
-	echo $daemon -pf "$pid_file" -lf "$lease_file" $2
+	$daemon -pf "$pid_file" -lf "$lease_file" $2
 	;;
 
 stop)
-	pid=$(cat "$pid_file")
-	echo kill -9 $pid
+	if [ -f "$pid_file" ]; then 
+		pid=$(cat "$pid_file")
+	else
+		pid=$(pidof $daemon)
+	fi
+	if [ -n "$pid" ]; then
+		kill -9 $pid
+	else
+		echo "$daemon not running"
+	fi
 	;;
 *)
 	usage

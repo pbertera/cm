@@ -1,4 +1,4 @@
-export __cm_base_dir=/home/pietro/mysvn/cm2/cm
+export __cm_base_dir=/opt/cm
 export __cm_libexec_dir=${__cm_base_dir}/libexec
 export __cm_db_dir=${__cm_base_dir}/db
 export __cm_lib_dir=${__cm_base_dir}/lib

@@ -1,6 +1,6 @@
 #alias cm=$(pwd -P)/bin/cm
 
-PATH=$PATH:$(pwd -P)/bin
+PATH=$PATH:$(pwd -P)/bin:$(pwd -P)/sbin
 cd lib
 . cm_complete
 cd ..

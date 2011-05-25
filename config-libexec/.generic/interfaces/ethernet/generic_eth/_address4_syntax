@@ -12,6 +12,11 @@
 if [ $__cm_no_command ]; then
 	exit
 else
+	
+	# check if is configured in dhcp mode
+	is_dhcp=$(__cm_db_get_leaf interfaces ethernet $3 dhcp4 2>/dev/null )
+	[ -n "$is_dhcp" ] && __cm_exit_error "Interface $3 is configured for dhcp4 protocol, remove first \"interfaces ethernet $3 dhcp4\""
+
 	ip=$(echo $5 | cut -d "/" -f1)
 	mask=$(echo $5 | cut -d "/" -f2)
 	

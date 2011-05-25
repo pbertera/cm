@@ -14,17 +14,16 @@ param=$(__cm_command_param $@)
 command_path_dir=$(__cm_command_path_dir $@)
 command_name=$(__cm_command_name $@)
 
-set -e
 if [ $__cm_no_command ]; then
 	__cm_db_remove_leaf interfaces ethernet $3 commit
 	exit 0
 fi
 
 dhcp4=$(__cm_db_get_leaf $1 $2 $3 dhcp4 2>/dev/null)
+
 if [ -n "$dhcp4" ]; then
-	pid=$(pidof dhclient3)
-	kill -9 $pid
-	dhclient3 $3
+	cm_dhclient stop $3
+	cm_dhclient start $3
 	exit 0
 fi
 
@@ -32,21 +31,19 @@ fi
 config_ip=$(__cm_db_get_leaf $1 $2 $3 address4) #ip + netmask
 state=$(__cm_db_get_leaf $1 $2 $3 state)
 current_ip=$(ip -o addr | grep "inet " |grep $3 | cut -d\  -f 7)
-set +e
 
 addr_to_add=
 for addr in $config_ip; do
-	echo $current_ip | grep $addr > /dev/null 2>&1
-	[ "$?" != "0" ] && addr_to_add="$addr_to_add $addr"
+	found=$(expr match "$current_ip" ".*${addr//./\\.}.*")
+	[ "$found" == "0" ] && addr_to_add="$addr_to_add $addr"
 done
 
 addr_to_rem=
 for addr in $current_ip; do
-	echo $config_ip | grep $addr > /dev/null 2>&1
-	[ "$?" != "0" ] && addr_to_rem="$addr_to_rem $addr"
+	found=$(expr match "$config_ip" ".*${addr//./\\.}.*") 
+	[ "$found" == "0" ] && addr_to_rem="$addr_to_rem $addr"
 done
 
-set -e
 
 for addr in $addr_to_rem; do
 	ip addr del $addr dev $3

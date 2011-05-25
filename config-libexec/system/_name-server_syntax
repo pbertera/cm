@@ -1,0 +1,17 @@
+#!/bin/sh
+# check syntax for system namer-serverp xxx.xxx.xxx.xxx
+# @param $1: system:        statical part of command
+# @param $2: name-server:          statical part of command
+# @param $3: addres:          the ip address of nameserver
+
+. ${__cm_lib_dir}/cmcheck
+. ${__cm_lib_dir}/cmlib
+
+if [ $__cm_no_command ]; then
+        exit
+else
+        is_valid_ip "$3"
+        [ "$?" != "0" ] && __cm_exit_error "Invalid IPv4 address of nameserver"
+        exit 0
+fi
+

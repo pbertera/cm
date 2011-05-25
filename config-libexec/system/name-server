@@ -1,9 +1,8 @@
 #!/bin/sh
-# set hostname
-# @param $1: system:            statical part of command
-# @param $2: hostname:          statical part of command
-# @param $3: hostname value:    the hopstname
-
+# set name server
+# @param $1: system:	 	statical part of command
+# @param $2: name-server:	statical part of command
+# @param $3: nameserver value:	the hopstname
 
 . ${__cm_lib_dir}/cmlib
 
@@ -18,8 +17,7 @@ command_name=$(__cm_command_name $@)
 
 
 if [ $__cm_no_command ]; then
-	__cm_db_remove_leaf system hostname
+	__cm_db_remove_leaf system name-server
 else
-	__cm_db_set_leaf "$param" system hostname
-	hostname $param
+	__cm_db_set_leaf "$param" system name-server
 fi

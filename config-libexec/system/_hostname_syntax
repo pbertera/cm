@@ -1,3 +1,6 @@
 #!/bin/sh
 
-exit
+. ${__cm_lib_dir}/cmlib
+
+[ ${#@} -gt 3 ] && __cm_exit_error "Space not allowed in hostname"
+exit 0

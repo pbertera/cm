@@ -13,7 +13,7 @@ command_path_dir=$(__cm_command_path_dir $@)
 command_name=$(__cm_command_name $@)
 
 nameserver=$(__cm_db_get_leaf system name-server 2>/dev/null) 
-[ -n "$nameserver" ] && nameserver="namserver $nameserver"
+[ -n "$nameserver" ] && nameserver="nameserver $nameserver"
 
 echo "# modified by cm" > /etc/resolv.conf
 

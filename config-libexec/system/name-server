@@ -12,20 +12,19 @@ param=$(__cm_command_param $@)
 command_path_dir=$(__cm_command_path_dir $@)
 command_name=$(__cm_command_name $@)
 
-#command_branch_prio=$(__cm_get_command_branch_priority $@)
-#command_priority=$(__cm_get_command_priority $@)
+domain=$(__cm_db_get_leaf system domain 2>/dev/null)
+[ -n "$domain" ] && domain="domain $domain"
 
+echo "# modified by cm" > /etc/resolv.conf
 
 if [ $__cm_no_command ]; then
 	__cm_db_remove_leaf system name-server
+	echo "$domain" >> /etc/resolv.conf
 else
 	#get information from db
-	__cm_db_set_leaf "$param" system name-server
+	__cm_db_set_leaf "$param" system name-server	
 
-	domain=$(__cm_db_get_leaf system domain 2>/dev/null)
-	[ -n "$domain" ] && domain="domain $domain"
-	
-	cat << EOF > /etc/resolv.conf
+	cat << EOF >> /etc/resolv.conf
 $domain
 nameserver $param
 EOF

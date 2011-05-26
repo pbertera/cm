@@ -1,0 +1,12 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "set name server for this host"
+echo 
+echo "Parameter: nameserver IP address"
+
+__cm_print_help_bottom
+

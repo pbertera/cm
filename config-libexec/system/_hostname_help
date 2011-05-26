@@ -1,0 +1,12 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "set hostname for this host"
+echo 
+echo "Parameter: hostname"
+
+__cm_print_help_bottom
+

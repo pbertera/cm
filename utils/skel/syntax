@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_exit_error "Syntax must be implemented"

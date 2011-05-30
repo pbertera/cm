@@ -10,8 +10,9 @@ if [ -d "${__cm_libexec_dir}/$command_dir" ]; then
 	echo -e "prio\t\tcommand"
 	echo "-----------------------"
 	for c in $(ls -1 "${__cm_libexec_dir}/$command_dir" | grep -v "^_"); do
-		[ -f "${__cm_libexec_dir}/$command_dir/_${c}_priority" ] && echo -e $(cat "${__cm_libexec_dir}/$command_dir/_${c}_priority")"\t\t$c"
-		echo -e ${__cm_default_priority}*"\t\t$c"
+		[ -f "${__cm_libexec_dir}/$command_dir/_${c}_priority" ] && \
+			echo -e $(cat "${__cm_libexec_dir}/$command_dir/_${c}_priority")"\t\t$c" || \
+			echo -e ${__cm_default_priority}*"\t\t$c"
 	done
 	echo "NB priority with [*] are setted by default priority"
 
@@ -45,7 +46,7 @@ cp skel/command "${__cm_libexec_dir}/$command_dir"/$command_name
 cp skel/syntax "${__cm_libexec_dir}/$command_dir"/_${command_name}_syntax
 cp skel/complete "${__cm_libexec_dir}/$command_dir"/_${command_name}_complete
 
-[ $autocomplete == "y" ] || touch "${__cm_libexec_dir}/$command_dir"/_${command_name}_nocomplete
+[ "$autocomplete" == "y" ] || touch "${__cm_libexec_dir}/$command_dir"/_${command_name}_nocomplete
 
 cat << EOF > "${__cm_libexec_dir}/$command_dir"/_${command_name}_help
 #!/bin/bash
@@ -61,7 +62,7 @@ echo "Parameter: "
 __cm_print_help_bottom
 EOF
 
-chmod +x "${__cm_libexec_dir}/$command_dir"/_${command_name}_nocomplete
+chmod +x "${__cm_libexec_dir}/$command_dir"/_${command_name}_help
 
 echo "Don't forget to implement "${__cm_libexec_dir}/$command_dir"/$command_name"
 echo "Don't forget to implement "${__cm_libexec_dir}/$command_dir"/_${command_name}_syntax"

@@ -262,9 +262,9 @@ __cm_db_get_leaf()
 	fi
 }
 
-# return a list of branches starting from paramete
-__cm_db_list_branches_sorted()
-{ 
+# return a list of branches starting from parameter with priority
+__cm_db_list_branches_sorted_priority()
+{
 	branch=${@}
 	start_path=$(__cm_db_branch_to_path $branch)
 	if [ -d "$start_path" ];then
@@ -274,10 +274,16 @@ __cm_db_list_branches_sorted()
 			priority=$(__cm_get_command_branch_priority "$@ $branch")
 			ret="$priority:${@} $branch"
 			echo ${ret/: /:}
-		done | sort -n -k1 -t: | cut -d: -f2-
+		done | sort -n -k1 -t:
 	else
 		__cm_exit_error "the configuration path \"$branch\" not exist in db"
 	fi
+} 
+
+# return a list of branches starting from parameter
+__cm_db_list_branches_sorted()
+{ 
+	__cm_db_list_branches_sorted_priority $@ | cut -d: -f2
 }
 
 #TODO: use this function
@@ -292,7 +298,7 @@ __cm_db_branch_to_path()
 }
 
 # list leaf in a branch sorted
-__cm_db_list_leaf_sorted()
+__cm_db_list_leaf_sorted_priority()
 {
 	local branch=$@
 	local path=$(__cm_db_branch_to_path $branch)
@@ -303,7 +309,13 @@ __cm_db_list_leaf_sorted()
 			echo "${priority}:$leaf_name"
 			__cm_debug "$leaf_name is a leaf, priority is: $priority"
 		fi
-	done | sort -n -k1 -t: | cut -d: -f2-
+	done | sort -n -k1 -t:
+}
+
+# list leaf in a branch sorted
+__cm_db_list_leaf_sorted()
+{
+	__cm_db_list_leaf_sorted_priority $@ | cut -d: -f2-
 }
 
 # show leaf name and value

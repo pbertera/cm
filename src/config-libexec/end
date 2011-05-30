@@ -1,2 +1,0 @@
-#!/bin/sh
-rm -f $__cm_base_dir/setenv-addictional

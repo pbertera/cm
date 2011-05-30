@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# @param $1 hostname
+# @param $2 domain
+
+hostname=$1
+domain=$2
+
+fqdn=
+[ -n "$domain" ] && fqdn=$hostname.$domain
+
+[ -z "$hostname" ] && (echo "hostname missing"; exit 1 )
+
+cat /etc/hosts | sed -e s/^127.0.0.1.*/"127.0.0.1\t$hostname\t$fqdn"/g > /tmp/hosts
+mv /tmp/hosts /etc/hosts
+
+[ -n "$fqdn" ] && (hostname $fqdn ; exit)
+hostname $hostname

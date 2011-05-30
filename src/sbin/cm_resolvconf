@@ -1,0 +1,11 @@
+#!/bin/bash
+
+domain="$1"
+nameserver="$2"
+
+cat << EOF > /etc/resolv.conf
+# configured by cm
+domain $domain
+nameserver $nameserver
+EOF
+

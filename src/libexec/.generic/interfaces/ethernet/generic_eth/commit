@@ -22,8 +22,8 @@ fi
 dhcp4=$(__cm_db_get_leaf $1 $2 $3 dhcp4 2>/dev/null)
 
 if [ -n "$dhcp4" ]; then
-	cm_dhclient stop $3
-	cm_dhclient start $3
+	sudo cm_dhclient stop $3
+	sudo cm_dhclient start $3
 	exit 0
 fi
 
@@ -46,18 +46,18 @@ done
 
 
 for addr in $addr_to_rem; do
-	ip addr del $addr dev $3
+	sudo ip addr del $addr dev $3
 done
 
 for addr in $addr_to_add; do
-	ip addr add $addr dev $3
+	sudo ip addr add $addr dev $3
 done
 
 # activate interface
-[ "$state" == "active" ] && ip link set up dev $3
+[ "$state" == "active" ] && sudo ip link set up dev $3
 
 # deactivate interface
-[ "$state" == "inactive" ] && ip link set down dev $3
+[ "$state" == "inactive" ] && sudo ip link set down dev $3
 
 #insert a leaf in db with no value
 __cm_db_set_leaf "" interfaces ethernet $3 commit

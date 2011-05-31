@@ -1,4 +1,4 @@
-. cmlib
+#. cmlib
 
 # $1 = dir to list
 __cm_complete_indir()
@@ -73,7 +73,11 @@ __cm_complete()
 		__cm_complete_command "$prev_opts_path"
 		return
 	fi
-	echo "NOT FOUND"
+	#echo "NOT FOUND"
 	return 0
 }
 
+complete -F __cm_complete cm
+complete -F __cm_complete dcm
+complete -F __cm_complete nocm
+complete -F __cm_complete dnocm

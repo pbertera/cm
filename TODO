@@ -1,3 +1,4 @@
+* pensare sistema di configure e build migliore: check dipendenze.
 * sistemare setenv e PROMPT_COMMAND
 * fqdn check in domain syntax
 * scrivere script per generare degli skeleton di comandi

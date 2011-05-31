@@ -21,5 +21,9 @@ if [ $__cm_no_command ]; then
 	__cm_db_remove_leaf system hostname
 else
 	__cm_db_set_leaf "$param" system hostname
-	hostname $param
+	
 fi
+
+hostname=$(__cm_db_get_leaf system hostname)
+domain=$(__cm_db_get_leaf system domain)
+sudo ${__cm_base_dir}/sbin/cm_hostname "$hostname" "$domain"

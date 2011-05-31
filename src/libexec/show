@@ -4,7 +4,7 @@
 # @param $1: show
 # @param $@: start path
 
-export __cm_libexec_dir=${__cm_base_dir}/config-libexec
+#export __cm_libexec_dir=${__cm_base_dir}/config-libexec
 . ${__cm_lib_dir}/cmlib
 
 #OIFS=$IFS

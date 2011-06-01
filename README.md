@@ -45,22 +45,3 @@ Installazione
 3. Usa: (cm è l'utente specificato nella variabile CM_OPERATOR_USER di config.mk)
 	
     su - cm
-
-# API DOC(in progress)
-	Struttura:
-	
-	command branch= percorso fino al comando
-	command leaf= nome del comando
-	command parameters= tutto quello che segue il command leaf
-	
-	Es:
-	set system hostname ciccio pasticcio
-	----------|--------|----------------|
-	  branch     leaf      parameters
-
-	deve eseguire il comando
-	$libexec/system/hostname "ciccio pasticcio"
-	
-	se salva il valore nel db lo salva in
-	
-	echo "ciccio pasticcio" > $db/system/hostname

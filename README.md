@@ -40,11 +40,11 @@ Installazione
 
 2. Installa il tutto (da root)
 	
-	make all
+    make all
 
 3. Usa: (cm è l'utente specificato nella variabile CM_OPERATOR_USER di config.mk)
 	
-	su - cm
+    su - cm
 
 # API DOC(in progress)
 	Struttura:

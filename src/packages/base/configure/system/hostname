@@ -26,4 +26,4 @@ fi
 
 hostname=$(__cm_db_get_leaf system hostname)
 domain=$(__cm_db_get_leaf system domain)
-sudo ${__cm_base_dir}/sbin/cm_hostname "$hostname" "$domain"
+_cm_hostname "$hostname" "$domain"

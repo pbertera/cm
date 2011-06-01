@@ -19,12 +19,6 @@ __cm_print_help_bottom()
 	echo "-----------------------------------------------"
 }
 
-#execute sudo with -E
-__cm_sudo()
-{
-	sudo -E $@
-}
-
 # print debug information only if __cm_debug var is set
 # @params $@: message to print
 __cm_debug()

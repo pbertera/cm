@@ -25,5 +25,5 @@ domain=$(__cm_db_get_leaf system domain 2>/dev/null)
 nameserver=$(__cm_db_get_leaf system name-server 2>/dev/null)
 hostname=$(__cm_db_get_leaf system hostname 2>/dev/null)
 
-sudo ${__cm_base_dir}/sbin/cm_resolvconf "$domain" "$nameserver"
-sudo ${__cm_base_dir}/sbin/cm_hostname "$hostname" "$domain"
+_cm_resolvconf "$domain" "$nameserver"
+_cm_hostname "$hostname" "$domain"

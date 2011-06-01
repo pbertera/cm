@@ -7,8 +7,6 @@ pid_file=/opt/cm/var/run/dhclient.$2.pid
 lease_file=/opt/cm/var/lib/dhclient/dhclient.$2.leases
 daemon=dhclient3
 
-. $__cm_base_dir/sbin/common_functions
-
 function usage
 {
 	echo "Usage: $0 {start|stop} iface"
@@ -17,7 +15,7 @@ function usage
 
 [ "${#@}" != "2" ] && usage
 
-dev=$(cm_list_iface | grep "$2$")
+dev=$(_cm_list_iface | grep "$2$")
 
 [ "$dev" != "$2" ] && die "$2 is not a valid interface"
 

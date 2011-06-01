@@ -1,7 +1,3 @@
 #!/bin/sh
 
-cat << EOF > $__cm_base_dir/var/lib/cm/setenv-addictional
-export __cm_libexec_dir=${__cm_base_dir}/usr/lib/cm/config-libexec
-export __cm_prompt='(config)# '
-export PS1="(config)# "
-EOF
+su - $__cm_configure_user

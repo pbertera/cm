@@ -5,6 +5,6 @@ operator:
 .PHONY: configure
 configure:
 	cp -a configure/* $(CM_CONFIGURE_LIBEXECDIR)/
-#	cp -a configure/generic $(CM_CONFIGURE_LIBEXECDIR)/.generic
+	ln -s $(CM_OPERATOR_LIBEXECDIR) $(CM_CONFIGURE_LIBEXECDIR)/do
 
 all: configure operator

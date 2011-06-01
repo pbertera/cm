@@ -23,4 +23,4 @@ fi
 
 domain=$(__cm_db_get_leaf system domain)
 nameserver=$(__cm_db_get_leaf system name-server)
-sudo ${__cm_base_dir}/sbin/cm_resolvconf "$domain" "$nameserver"
+_cm_resolvconf "$domain" "$nameserver"

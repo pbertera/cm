@@ -1,0 +1,3 @@
+#!/bin/bash
+
+kill -HUP $(pgrep -s 0 -o)

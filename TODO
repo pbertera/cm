@@ -1,30 +1,28 @@
-* pensare sistema di configure e build migliore: check dipendenze.
-* sistemare setenv e PROMPT_COMMAND
+[0.7]
 * fqdn check in domain syntax
-* scrivere script per generare degli skeleton di comandi
+* scrivere script di init che esegua il file definito da $__cm_config_db
 * scrivere script che mostri l'albero delle priorità dei comandi
-* standardizzare il formato di output degli script di completamento e help
 
-[1] documentare cmlib e fare un howto su come estendere libexec
-[1.1] scrivere scritp di init
-[1.2] pensare ad uno strumento per test automatici
-[2] scrivere tante tante tante tante libexec
-	* gestione parametri di sistema: ip, hostname, dns
+[0.71]
+* documentare cmlib e fare un howto su come estendere libexec
+* pensare ad uno strumento per test automatici
+* scrivere tante tante tante tante libexec
 	* openvpn minimale
 	* samba
 	* bacula minimale
 
-[3] fare in modo che sia visibile nel database una proprietà che evidenzi che il parametro è applicato al sistema
-  es: lancio il comando "cm interfaces ethernet eth0 ip 192.168.101.0"
-  il comando "cm show" dovrebbe mostrarmi "interfaces ethernet eth0 ip 192.168.101.0 !!" (!! indica che non è ancora stato committato)
-  dopo il comando "commit" l'ip viene applicato e il simbolo "!!" scompare
-[4] includere dei test di congruenza delle configurazioni: se l'ip del sistema è diverso da quello nel db mi dovrebbe essere segnalato nel comando "cm show" (da integare con il punto 3?)
-[5] gestire il db su un scm (git?)
-[6] pacchettizzare i vari libexec in modo da rendere modulare il sistema
+[0.8]
+* fare in modo che sia visibile nel database una proprietà che evidenzi che il parametro è applicato al sistema
+	es: lancio il comando "cm interfaces ethernet eth0 ip 192.168.101.0"
+	il comando "cm show" dovrebbe mostrarmi "interfaces ethernet eth0 ip 192.168.101.0 !!" (!! indica che non è ancora stato committato)
+	dopo il comando "commit" l'ip viene applicato e il simbolo "!!" scompare
+* includere dei test di congruenza delle configurazioni: se l'ip del sistema è diverso da quello nel db mi dovrebbe essere segnalato nel comando "cm show" (da integare con il punto sopra?)
 
+[0.9]
+* logging dei comandi
+* gestire il db su un scm (git?)
 
-DA TESTARE BENE
-
-* verificare paduli con gli spazi nei valori [DONE, need test]
-** sistemare e bugfixare le funzioni __cm_command_param __cm_command_name __cm_command_path __cm_command_path_dir
-   mantenendo come riferimento per distinguere tra command branch, command leaf e command parameters il path del file in libexec [DONE, need test]
+[1.0]
+* pensare sistema di configure e build migliore: check dipendenze.
+* pacchettizzare i vari libexec in modo da rendere modulare il sistema
+* packaging deb e rpm

@@ -38,8 +38,11 @@ Installazione
 	* CM_CONFIGURE_LIBEXECDIR `/opt/cm/configure-libexec` directory in cui verranno installati gli script di livello configure
 	* CM_CONFIGURE_PWD `changeme` password dell'utente privilegiato
 
-2.
-	make all
+2. Installa il tutto (da root)
+	# make all
+
+3. Usa: (cm è l'utente specificato nella variabile CM_OPERATOR_USER di config.mk)
+	su - cm
 
 # API DOC(in progress)
 	Struttura:

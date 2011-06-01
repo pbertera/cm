@@ -26,17 +26,17 @@ Installazione
 -------------
 
 1. Configura cm editando il file src/config.mk di seguito il significato delle variabili:
-	* CM_LIBDIR (/opt/cm/lib) directory in cui verra installato il framework
-	* CM_BINDIR (/opt/cm/bin) directory in cui verranno installati i comandi
-	* CM_DBDIR (/opt/cm/db) directory in cui risederà il CMDB
-	* COMPLETION_DIR (/etc/bash_completion.d/) directory in cui risiedono i file di bash completion
-	* CM_OPERATOR_USER (cm) utente non privilegiato utilizzato come operatore
-	* CM_OPERATOR_HOME (/home/$(CM_OPERATOR_USER)) home direcotry dell'utente operatore
-	* CM_OPERATOR_LIBEXECDIR (/opt/cm/operator-libexec) directory in cui verranno installati gli script di livello operatore
-	* CM_CONFIGURE_USER (cmsu) nome utente privilegiato (con uid e gid = 0) con cui verranno eseguiti i comandi in configure mode
-	* CM_CONFIGURE_HOME (/home/$(CM_CONFIGURE_USER)) home directory dell'utente privilegiato
-	* CM_CONFIGURE_LIBEXECDIR (/opt/cm/configure-libexec) directory in cui verranno installati gli script di livello configure
-	* CM_CONFIGURE_PWD (changeme) password dell'utente privilegiato
+	* CM_LIBDIR `/opt/cm/lib` directory in cui verra installato il framework
+	* CM_BINDIR `/opt/cm/bin` directory in cui verranno installati i comandi
+	* CM_DBDIR `/opt/cm/db` directory in cui risederà il CMDB
+	* COMPLETION_DIR `/etc/bash_completion.d/` directory in cui risiedono i file di bash completion
+	* CM_OPERATOR_USER `cm` utente non privilegiato utilizzato come operatore
+	* CM_OPERATOR_HOME `/home/$(CM_OPERATOR_USER)` home direcotry dell'utente operatore
+	* CM_OPERATOR_LIBEXECDIR `/opt/cm/operator-libexec` directory in cui verranno installati gli script di livello operatore
+	* CM_CONFIGURE_USER `cmsu` nome utente privilegiato (con uid e gid = 0) con cui verranno eseguiti i comandi in configure mode
+	* CM_CONFIGURE_HOME `/home/$(CM_CONFIGURE_USER)` home directory dell'utente privilegiato
+	* CM_CONFIGURE_LIBEXECDIR `/opt/cm/configure-libexec` directory in cui verranno installati gli script di livello configure
+	* CM_CONFIGURE_PWD `changeme` password dell'utente privilegiato
 
 2.
 	make all

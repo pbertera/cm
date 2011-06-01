@@ -3,7 +3,6 @@ temporary install method... see TODO
 1) configure build variables in config file src/config.mk
 
 2) install cm:
-	cd src
 	make all
 
 3) run cm: if "cm" in the username defined in "CM_OPERATOR_USER"

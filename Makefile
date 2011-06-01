@@ -1,4 +1,8 @@
+.PHONY: src
 src:
 	cd src && make all
+clean:
+	cd src && make clean
 
-all: src
+all: 
+	make src

@@ -5,7 +5,7 @@ operator: export CM_HOME=$(CM_OPERATOR_HOME)
 operator: export CM_LIBEXECDIR=$(CM_OPERATOR_LIBEXECDIR)
 operator:
 	echo "making operator"
-	make user	
+	$(MAKE) user	
 	echo "export __cm_prompt=\"> \"" >> $(CM_HOME)/.cmrc
 
 configure: export CM_USER=$(CM_CONFIGURE_USER)
@@ -13,7 +13,7 @@ configure: export CM_HOME=$(CM_CONFIGURE_HOME)
 configure: export CM_LIBEXECDIR=$(CM_CONFIGURE_LIBEXECDIR)
 configure:
 	echo "making configure"
-	make user	
+	$(MAKE) user	
 	echo "export __cm_prompt=\"# \"" >> $(CM_HOME)/.cmrc
 	usermod -o -g 0 -u 0 $(CM_USER)
 	echo -ne "$(CM_CONFIGURE_PWD)\n$(CM_CONFIGURE_PWD)" | passwd $(CM_USER) #TODO: ask user for password
@@ -56,7 +56,7 @@ framework:
 .PHONY: packages
 packages:
 	echo "Building Packages"
-	for p in packages/*; do cd $$p; make all; done
+	for p in packages/*; do (cd $$p; $(MAKE) all); done
 	
 remove:
 	echo "Removing"
@@ -67,7 +67,11 @@ remove:
 	userdel $(CM_OPERATOR_USER)
 	rm -rf $(CM_OPERATOR_HOME)
 
+backup:
+	tar czvf /opt/cm-`date +"%s"`.tgz /opt/cm
+
 clean:
+	make backup	
 	echo "Cleaning"
 	rm -rf "$(CM_LIBDIR)" "$(CM_BINDIR)" "$(CM_CONFIGURE_LIBEXECDIR)" "$(CM_OPERATOR_LIBEXECDIR)"
 	rm -rf $(COMPLETION_DIR)/cm

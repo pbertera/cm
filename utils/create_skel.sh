@@ -1,24 +1,23 @@
 #!/bin/bash
 
-[ -z "${__cm_libexec_dir}" ] && { echo 'Error: you must define ${__cm_libexec_dir}'; exit 1; }
+[ -z "$1" ] && { echo 'ERROR: You must specify the command base directory'; exit 1; }
+__cm_libexec_dir="$1"
+
+skel_dir=$(dirname $0)/skel
 
 read -p "Command dir? " command_dir
-if [ -d "${__cm_libexec_dir}/$command_dir" ]; then
+mkdir -p "${__cm_libexec_dir}/$command_dir"
 
-	echo "Commands in $command_dir :"		
+echo "Commands in $command_dir :"		
 
-	echo -e "prio\t\tcommand"
-	echo "-----------------------"
-	for c in $(ls -1 "${__cm_libexec_dir}/$command_dir" | grep -v "^_"); do
-		[ -f "${__cm_libexec_dir}/$command_dir/_${c}_priority" ] && \
-			echo -e $(cat "${__cm_libexec_dir}/$command_dir/_${c}_priority")"\t\t$c" || \
-			echo -e ${__cm_default_priority}*"\t\t$c"
-	done
-	echo "NB priority with [*] are setted by default priority"
-
-else
-	echo "${__cm_libexec_dir}/$command_dir" does not exists
-fi
+echo -e "prio\t\tcommand"
+echo "-----------------------"
+for c in $(ls -1 "${__cm_libexec_dir}/$command_dir" | grep -v "^_"); do
+	[ -f "${__cm_libexec_dir}/$command_dir/_${c}_priority" ] && \
+		echo -e $(cat "${__cm_libexec_dir}/$command_dir/_${c}_priority")"\t\t$c" || \
+		echo -e ${__cm_default_priority}*"\t\t$c"
+done
+echo "NB priority with [*] are setted by default priority"
 
 read -p "Command name? " command_name
 
@@ -51,7 +50,7 @@ cp skel/complete "${__cm_libexec_dir}/$command_dir"/_${command_name}_complete
 cat << EOF > "${__cm_libexec_dir}/$command_dir"/_${command_name}_help
 #!/bin/bash
 
-. ${__cm_lib_dir}/cmlib
+. \${__cm_lib_dir}/cmlib
 
 __cm_print_help_header $@
 

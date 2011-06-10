@@ -28,14 +28,14 @@ __cm_complete_command()
 	command="${dirname}/_${filename}_complete"
 	COMPREPLY=()
 	cur="${COMP_WORDS[COMP_CWORD]}"
+	if [ -f "${dirname}/_${filename}_nocomplete" ]; then
+		echo 
+		eval $command
+		echo -n "${__cm_prompt}${COMP_WORDS[@]}"
+		return
+	fi
 	if [ -x "$command" ]; then
 		complete=$($command) #TODO: fix complete for nocm command
-		if [ -f "${dirname}/_${filename}_nocomplete" ]; then
-			echo 
-			eval $command
-			echo -n "${__cm_prompt}${COMP_WORDS[@]}"
-			return
-		fi
 		COMPREPLY=($(compgen -W "$complete" -- "$cur"))
 	fi
 }

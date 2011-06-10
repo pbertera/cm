@@ -26,3 +26,15 @@ function is_valid_scp_url()
 {
 	echo "$1" | grep '^scp://.*:.*'  > /dev/null 2>&1
 }
+
+#list all network interfaces
+function list_iface()
+{
+	ip -o link | cut -d \  -f2 | sed -e 's/://'
+}
+
+# check if $1 is a valit network interface
+function is_valid_iface()
+{
+	list_iface | grep $1 > /dev/null 2>&1
+}

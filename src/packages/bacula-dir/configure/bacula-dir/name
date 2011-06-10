@@ -1,0 +1,22 @@
+#!/bin/sh
+
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+command_branch_prio=$(__cm_get_command_branch_priority $@)
+command_priority=$(__cm_get_command_priority $@)
+
+
+if [ $__cm_no_command ]; then
+	# no command implementation
+	__cm_db_remove_leaf bacula-dir name
+else
+	# command implementation
+	__cm_db_set_leaf "$param" bacula-dir name
+fi

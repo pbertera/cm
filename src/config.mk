@@ -12,3 +12,4 @@ export CM_CONFIGURE_USER=cmsu
 export CM_CONFIGURE_HOME=/home/$(CM_CONFIGURE_USER)
 export CM_CONFIGURE_LIBEXECDIR=/opt/cm/configure-libexec
 export CM_CONFIGURE_PWD=changeme
+

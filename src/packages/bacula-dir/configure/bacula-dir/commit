@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# apply configuration in db to system
+# @param $1: bacula-dir		statical part of command
+# @param $2: commit		statical part of command
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+if [ $__cm_no_command ]; then
+	__cm_db_remove_leaf bacula-dir commit
+	exit 0
+fi
+
+dir_name=$(__cm_db_get_leaf bacula-dir name 2>/dev/null)
+dir_description=$(__cm_db_get_leaf bacula-dir description 2>/dev/null)
+dir_password=$(__cm_db_get_leaf bacula-dir password 2>/dev/null)
+
+export TPL_BACULA_DIR_NAME=$dir_name
+export TPL_BACULA_DIR_PASSWORD=$dir_password
+export TPL_BACULA_DIR_DESCRIPTION=$dir_description
+
+cat << EOF |  _cm_parse_template 
+
+Director {
+  Name = \${TPL_BACULA_DIR_NAME}
+  Password = \${TPL_BACULA_DIR_PASSWORD}
+  PidDirectory = "\$HOME/bacula/bin/working"
+  QueryFile = "\$HOME/bacula/bin/query.sql"
+  Messages = Standard
+  WorkingDirectory = "\$HOME/bacula/bin/working"
+}
+
+EOF

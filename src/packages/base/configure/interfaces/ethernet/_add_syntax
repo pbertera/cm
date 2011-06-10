@@ -1,0 +1,13 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+. ${__cm_lib_dir}/cmcheck
+
+if [ $__cm_no_command ]; then
+	[ -L $__cm_configure_libexec_dir/interfaces/ethernet/$4 ] || __cm_exit_error "Network interface $4 not exist"
+else
+	is_valid_iface $4
+        [ "$?" != "0" ] && __cm_exit_error "Invalid network interface"
+	exit 0	
+fi
+

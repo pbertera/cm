@@ -1,7 +1,18 @@
 #!/bin/sh
 
-# print help header
-# @params $@: command name
+#@.. function:: __cm_print_help_header(command)
+#@   
+#@   Stampa l'help header del comando
+#@
+#@   ``__cm_print_help_header "system interface ethernet eth0 address4"`` produrrà in stdout ::
+#@
+#@      -----------------------------------------------
+#@      Command Help: system interface ethernet eth0 address4
+#@      -----------------------------------------------
+#@   
+#@   :param command: il comando da documentare
+#@   :type command: String
+#@
 __cm_print_help_header()
 {
 	echo
@@ -11,32 +22,57 @@ __cm_print_help_header()
 	echo
 }
 
-# print help bottom
-# @params $@: command name
+#@.. function:: __cm_print_help_bottom()
+#@   
+#@   Stampa l'help bottom del comando
+#@
+#@   ``__cm_print_help_bottom`` produrrà in stdout ::
+#@
+#@      -----------------------------------------------
+#@   
 __cm_print_help_bottom()
 {
 	echo
 	echo "-----------------------------------------------"
 }
 
-# print debug information only if __cm_debug var is set
-# @params $@: message to print
+#@.. function:: __cm_debug([text],[...])
+#@   
+#@   Stampa la stringa passata in stderr solo se è impostata la variabile ``__cm_debug``
+#@
+#@   ``__cm_debug Hello world`` produrrà in stderr ::
+#@
+#@       Debug: Hello world 
+#@   
+#@   :param text: la stringa da stampare
+#@   :type text: String
+#@
 __cm_debug()
 {
 	[ $__cm_debug ] && echo "Debug: $@" 1>&2
 	return 0
 }
 
-# print message in standard error and exit with exit code 1
-# @params $@: Message to print
+#@.. function:: __cm_exit_error([text],[...])
+#@   
+#@   Stampa la stringa passata in stderr ed esce
+#@
+#@   :param text: la stringa da stampare
+#@   :type text: String
+#@
 __cm_exit_error()
 {
 	echo "Error: $@"  1>&2 
 	exit 1
 }
 
-# return the list of parameters in command
-# params $@: command string
+#@.. function:: __cm_command_param(command)
+#@   
+#@   Stampa i soli parametri che fanno parte della stringa ``command``
+#@
+#@   :param command: il comando da cui estrarre i parametri
+#@   :type command: String
+#@
 __cm_command_param()
 {
 	local full_command="$@"
@@ -46,17 +82,26 @@ __cm_command_param()
 	echo $params
 }
 
-# return the command name correspondig to command string in $@
-# @params $@: command string
+#@.. function:: __cm_command_name(command)
+#@   
+#@   Stampa il solo nome del comando ``command``
+#@
+#@   :param command: il comando da cui estrarre il nome
+#@   :type command: String
+#@
 __cm_command_name()
 {
 	local command_path=$(__cm_command_path $@)
 	echo $(basename "$command_path")
 }
 
-
-# return the full command name excpet pamaeters
-# @params $@: command string
+#@.. function:: __cm_command_name(command)
+#@   
+#@   Stampa il comando completo esclusi i parametri di ``command``
+#@
+#@   :param command: il comando da cui togliere gli eventuali parametri
+#@   :type command: String
+#@
 __cm_command()
 {
         local cmd="${__cm_libexec_dir}"
@@ -93,8 +138,13 @@ __cm_command()
 	echo "${command/ /}"
 }
 
-# return the command path correspondig to command string in $@
-# @params $@: command string
+#@.. function:: __cm_command_path(command)
+#@   
+#@   Stampa il path dello script che implementa il comando ``command``
+#@
+#@   :param command: il comando senza parametri
+#@   :type command: String
+#@
 __cm_command_path()
 {
         local cmd="${__cm_libexec_dir}"
@@ -130,16 +180,27 @@ __cm_command_path()
 	echo "${cmd}"
 }
 
-# return the path of direcotry in libexec dir of command
-# @params $@: command string
+#@.. function:: __cm_command_path_dir(command)
+#@   
+#@   Stampa il nome della directory che contiene lo script che implementa il comando ``command``
+#@
+#@   :param command: il comando senza parametri
+#@   :type command: String
+#@
 __cm_command_path_dir()
 {
 	local command_path=$(__cm_command_path $@)
 	echo $(dirname "$command_path")
 }
 
-# return 0 if object is a command
-# return 1 if object is not a command
+#@.. function:: __cm_is_command(command)
+#@   
+#@   ritorna 0 se il comando ``command`` è un comando, altrimenti 1
+#@
+#@   :param command: il comando senza parametri
+#@   :type command: String
+#@   :rtype: Integer
+#@
 __cm_is_command()
 {
 	#check path silently
@@ -149,8 +210,14 @@ __cm_is_command()
 	return 1
 }
 
-# return 0 if object is a command branch
-# return 1 if object is not a command branch
+#@.. function:: __cm_is_branch(command)
+#@   
+#@   ritorna 0 se il comando ``command`` è un ramo, altrimenti 1
+#@
+#@   :param command: il comando senza parametri
+#@   :type command: String
+#@   :rtype: Integer
+#@
 __cm_is_command_branch()
 {
 	#check path silently
@@ -161,7 +228,15 @@ __cm_is_command_branch()
 	return 1
 }
 
-# get the priority of a command branch
+#@.. function:: __cm_get_command_branch_priority(command_branch)
+#@   
+#@   stampa la priorità del command branch. Se non trova il file di priorità
+#@   stampa la priorità definita dalla variabile ``_cm_default_priority``
+#@
+#@   :param command_branch: il comando senza parametri
+#@   :type command_branch: String
+#@   :rtype: Integer
+#@
 __cm_get_command_branch_priority()
 {
 	local branch=$@
@@ -174,7 +249,15 @@ __cm_get_command_branch_priority()
 	fi
 }
 
-# get the priority of command
+#@.. function:: __cm_get_command_branch_priority(command)
+#@   
+#@   stampa la priorità del comado. Se non trova il file di priorità
+#@   stampa la priorità definita dalla variabile ``_cm_default_priority``
+#@
+#@   :param command: il comando senza parametri
+#@   :type command: String
+#@   :rtype: Integer
+#@
 __cm_get_command_priority()
 {
 	local branch=$@

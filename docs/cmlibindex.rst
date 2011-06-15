@@ -9,7 +9,3 @@ Questa è la descrizione del modulo.
 In questo modulo sono contenute un sacco di funzioni.
 
 .. include:: cmlib.rst
-
-
-
-

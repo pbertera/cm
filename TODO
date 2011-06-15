@@ -2,6 +2,7 @@
 * fqdn check in domain syntax
 * scrivere script di init che esegua il file definito da $__cm_config_db
 * scrivere script che mostri l'albero delle priorità dei comandi
+* aggiungere un comando che mostri l'albero dei possibli comandi
 
 [0.71]
 * documentare cmlib e fare un howto su come estendere libexec

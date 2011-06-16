@@ -16,11 +16,15 @@ configure:
 	$(MAKE) user	
 	echo "export __cm_prompt=\"# \"" >> $(CM_HOME)/.cmrc
 	usermod -o -g 0 -u 0 $(CM_USER)
-	echo -ne "$(CM_CONFIGURE_PWD)\n$(CM_CONFIGURE_PWD)" | passwd $(CM_USER) #TODO: ask user for password
+	#echo -ne "$(CM_CONFIGURE_PWD)\n$(CM_CONFIGURE_PWD)" | passwd $(CM_USER) #TODO: ask user for password
 user:
-	useradd $(CM_USER) -d $(CM_HOME)
+	useradd $(CM_USER) -d $(CM_HOME) -s $(BASH_PATH)
 	mkdir -p $(CM_HOME)
 	mkdir -p $(CM_LIBEXECDIR)
+	@echo
+	@echo "Configuring password for user $(CM_USER)"
+	@passwd $(CM_USER)
+	@echo
 	echo "export __cm_lib_dir=$(CM_LIBDIR)" >> $(CM_HOME)/.cmrc
 	echo "export __cm_bin_dir=$(CM_BINDIR)" >> $(CM_HOME)/.cmrc
 	echo "export __cm_db_dir=$(CM_DBDIR)" >> $(CM_HOME)/.cmrc

@@ -38,15 +38,15 @@ user:
 	echo "export __cm_configure_user=$(CM_CONFIGURE_USER)" >> $(CM_HOME)/.cmrc
 	
 	
-	echo " . ~/.cmrc" >> $(CM_HOME)/.bash_profile
-	echo " . $(CM_LIBDIR)/common_functions" >> $(CM_HOME)/.bash_profile
+	echo ". ~/.cmrc" >> $(CM_HOME)/.bash_profile
+	echo ". $(CM_LIBDIR)/common_functions" >> $(CM_HOME)/.bash_profile
 	echo "export PATH=\$$PATH:$(CM_BINDIR)" >> $(CM_HOME)/.bash_profile
 	echo "alias dcm='__cm_debug=1 cm'" >> $(CM_HOME)/.bash_profile
 	echo "alias nocm='__cm_no_command=1 cm'" >> $(CM_HOME)/.bash_profile 
 	echo "alias dnocm='__cm_debug=1 __cm_no_command=1 cm'" >> $(CM_HOME)/.bash_profile
 	echo "PS1=\$$__cm_prompt" >> $(CM_HOME)/.bash_profile
 	echo ". /etc/bash_completion" >> $(CM_HOME)/.bash_profile
-	
+		
 	chown -R $(CM_USER):$(CM_USER) $(CM_HOME)	
 
 .PHONY: framework

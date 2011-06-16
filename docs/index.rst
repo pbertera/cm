@@ -16,6 +16,8 @@ Contenuti:
    :maxdepth: 2
    
    configurationmanagement.rst
+   quickstart.rst
+   framework.rst
    cmlibindex.rst
 
 Indices and tables

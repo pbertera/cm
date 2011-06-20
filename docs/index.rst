@@ -18,6 +18,7 @@ Contenuti:
    configurationmanagement.rst
    quickstart.rst
    framework.rst
+   packagesindex.rst
    cmlibindex.rst
 
 Indices and tables

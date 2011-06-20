@@ -7,3 +7,11 @@ packages:
 
 build:
 	sphinx-build . /var/www/
+
+github:
+	sphinx-build . /opt/cm-pages/cm/
+	cd /opt/cm-pages/cm/
+	git commit -a -m "First pages commit"
+	git push
+
+

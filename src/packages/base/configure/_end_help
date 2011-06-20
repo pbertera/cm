@@ -1,4 +1,24 @@
 #!/bin/bash
+#@=============
+#@cm system end
+#@=============
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm system end
+#@
+#@|negate-command| *none*
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@ *none*
+#@
+#@|usage|
+#@
+#@Questo comando esce dalla modalità di configurazione.
+
 
 . ${__cm_lib_dir}/cmlib
 

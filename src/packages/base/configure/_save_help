@@ -1,4 +1,25 @@
 #!/bin/bash
+#@=====================
+#@cm save <destination>
+#@=====================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm save <destination>
+#@
+#@|negate-command| *none*
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `destination`: the destination
+#@
+#@|default| *none*
+#@
+#@|usage|
+#@
+#@Questo comando il CMDB nella destionazione indicata dal parametro `destination`. La destinazione puo' essere un file locale oppure un file remoto copiato via scp.
 
 . ${__cm_lib_dir}/cmlib
 

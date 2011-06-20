@@ -1,4 +1,26 @@
 #!/bin/bash
+#@=====================
+#@cm system name-server
+#@=====================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm system name-server <name-server>
+#@
+#@|negate-command| nocm system name-server
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `name-server`: Internet address (in dot notation) of a name server that the resolver should query
+#@
+#@|default| *none*
+#@
+#@|usage|
+#@
+#@Questo comando imposta il server DNS da utilizzare per risolvere i nomi di dominio. In forma negata rimuove tale impostazione.
+
 
 . ${__cm_lib_dir}/cmlib
 

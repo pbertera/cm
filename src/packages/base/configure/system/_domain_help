@@ -1,4 +1,25 @@
 #!/bin/bash
+#@==================
+#@cm system domain
+#@==================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm system domain <domain>
+#@
+#@|negate-command| nocm system domain <domain>
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `domain`: the local domain name
+#@
+#@|default| *none*
+#@
+#@|usage|
+#@
+#@Il comando *cm system domain* imposta il nome di dominio locale.
 
 . ${__cm_lib_dir}/cmlib
 

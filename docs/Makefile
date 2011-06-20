@@ -8,10 +8,14 @@ packages:
 build:
 	sphinx-build . /var/www/
 
-github:
+ghpages:
 	sphinx-build . /opt/cm-pages/cm/
 	cd /opt/cm-pages/cm/
 	git commit -a -m "First pages commit"
 	git push
 
-
+all:
+	make cmlib
+	make packages
+	make build
+	make ghpages

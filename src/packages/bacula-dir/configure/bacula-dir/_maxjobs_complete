@@ -2,4 +2,4 @@
 
 . ${__cm_lib_dir}/cmlib
 
-echo "<name>"
+echo "<number>"

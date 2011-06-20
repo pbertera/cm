@@ -1,0 +1,33 @@
+#!/bin/bash
+#@=====================
+#@cm bacula-dir address
+#@=====================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir address <address>
+#@
+#@|negate-command| nocm bacula-dir address
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `address`: this command will cause the Director server to bind to the specified IP-Address,
+#@
+#@|default| *0.0.0.0*
+#@
+#@|usage|
+#@
+#@Questo comando imposta l'ip su cui si mette in ascolto il directos
+#@
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula director listen ip address"
+echo 
+echo "Parameter: <address> the address of director server"
+
+__cm_print_help_bottom

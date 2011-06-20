@@ -1,4 +1,26 @@
 #!/bin/bash
+#@=========================
+#@cm bacula-dir description
+#@=========================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir description <description>
+#@
+#@|negate-command| nocm bacula-dir description <description>
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `description`: The text field contains a description of the Director that will be displayed in the graphical user interface.
+#@
+#@|default| *none*
+#@
+#@|usage|
+#@
+#@Quest comando imposta la descrizione del director.
+#@
 
 . ${__cm_lib_dir}/cmlib
 

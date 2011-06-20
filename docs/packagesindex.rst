@@ -1,6 +1,6 @@
-########
+********
 Packages
-########
+********
 
 .. |syntax| replace::
    **Command Syntax:**

@@ -1,6 +1,106 @@
+###############
+Bacula Commands
+###############
+
+Questo `package` contiene i comandi di Bacula
+
+=========================
+cm bacula-dir description
+=========================
+
+|syntax| 
+
+|normal-command| cm bacula-dir description <description>
+
+|negate-command| nocm bacula-dir description <description>
+
+|configuration-mode|
+
+|parameters| 
+
+* `description`: The text field contains a description of the Director that will be displayed in the graphical user interface.
+
+|default| *none*
+
+|usage|
+
+Quest comando imposta la descrizione del director.
+
 =====================
-cm save <destination>
+cm bacula-dir maxjobs
 =====================
+
+|syntax| 
+
+|normal-command| cm bacula-dir maxjobs <number>
+
+|negate-command| nocm bacula-dir maxjobs <hostname>
+
+|configuration-mode|
+
+|parameters| 
+
+* `number`: number is the maximum number of total Director Jobs that should run concurrently.
+
+|default| *none*
+
+|usage|
+
+Questo comando imposta il numero massimo di job bacula concorrenti.
+
+======================
+cm bacula-dir password
+======================
+
+|syntax| 
+
+|normal-command| cm bacula-dir password <password>
+
+|negate-command| nocm bacula-dir password <password>
+
+|configuration-mode|
+
+|parameters| 
+
+* `password`: Specifies the password that must be supplied for the default Bacula Console to be authorized.
+
+|default| *none*
+
+|usage|
+
+Questo comando imposta la password utilizzata per connettersi tramite console al bacula director.
+
+====================
+cm bacula-dir name
+====================
+
+|syntax| 
+
+|normal-command| cm bacula-dir name <name>
+
+|negate-command| nocm bacula-dir name
+
+|configuration-mode|
+
+|parameters| 
+
+* `name`: The director name used by the system administrator.
+
+|default| *none*
+
+|usage|
+
+Questo comando imposta il nome del Bacula director
+
+#############
+Base Commands
+#############
+
+Questo `package` contiene i comandi base
+
+=======
+cm save
+=======
 
 |syntax| 
 

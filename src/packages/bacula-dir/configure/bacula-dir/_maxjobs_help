@@ -1,0 +1,33 @@
+#!/bin/bash
+#@=====================
+#@cm bacula-dir maxjobs
+#@=====================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir maxjobs <number>
+#@
+#@|negate-command| nocm bacula-dir maxjobs
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `number`: number is the maximum number of total Director Jobs that should run concurrently.
+#@
+#@|default| *1*
+#@
+#@|usage|
+#@
+#@Questo comando imposta il numero massimo di job bacula concorrenti.
+#@
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula director maximum concurrent jobs"
+echo 
+echo "Parameter: <number> where number is the maximum number of total Director Jobs that should run concurrently"
+
+__cm_print_help_bottom

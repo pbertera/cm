@@ -1,4 +1,27 @@
 #!/bin/bash
+#@====================
+#@cm bacula-dir name
+#@====================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir name <name>
+#@
+#@|negate-command| nocm bacula-dir name
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `name`: The director name used by the system administrator.
+#@
+#@|default| *none*
+#@
+#@|usage|
+#@
+#@Questo comando imposta il nome del Bacula director
+#@
+
 
 . ${__cm_lib_dir}/cmlib
 
@@ -6,6 +29,6 @@ __cm_print_help_header $@
 
 echo "configure bacula director name"
 echo 
-echo "Parameter: <bacula director name>"
+echo "Parameter: <name>"
 
 __cm_print_help_bottom

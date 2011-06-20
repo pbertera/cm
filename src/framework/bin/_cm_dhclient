@@ -3,8 +3,8 @@
 # start a dhclient process for interface
 # 
 
-pid_file=/opt/cm/var/run/dhclient.$2.pid
-lease_file=/opt/cm/var/lib/dhclient/dhclient.$2.leases
+pid_file=${__cm_prefix}/var/run/dhclient.$2.pid
+lease_file=${__cm_prefix}/var/lib/dhclient/dhclient.$2.leases
 daemon=dhclient3
 
 function usage

@@ -25,6 +25,7 @@ user:
 	@echo "Configuring password for user $(CM_USER)"
 	@passwd $(CM_USER)
 	@echo
+	echo "export __cm_prefix=$(CM_PREFIX)" >> $(CM_HOME)/.cmrc
 	echo "export __cm_lib_dir=$(CM_LIBDIR)" >> $(CM_HOME)/.cmrc
 	echo "export __cm_bin_dir=$(CM_BINDIR)" >> $(CM_HOME)/.cmrc
 	echo "export __cm_db_dir=$(CM_DBDIR)" >> $(CM_HOME)/.cmrc

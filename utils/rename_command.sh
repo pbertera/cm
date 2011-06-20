@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 [ -z $1 ] && ( echo "ERROR: command name is required"; exit -1)
 [ -z $2 ] && ( echo "ERROR: command destination is required"; exit -1)
 

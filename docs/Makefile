@@ -3,16 +3,14 @@ cmlib:
 
 packages:
 	rm -f packages.rst
-	-find ../src/packages -type f -name *help* -exec grep ^\#@ \{\} \; | sed -e s/\#@//1 >> packages.rst
+	for d in ../src/packages/*; do ( cd $$d; make -s doc >> ../../../docs/packages.rst ) ; done 
 
 build:
 	sphinx-build . /var/www/
 
 ghpages:
 	sphinx-build . /opt/cm-pages/cm/
-	cd /opt/cm-pages/cm/
-	git commit -a -m "First pages commit"
-	git push
+	( cd /opt/cm-pages/cm/; git commit -a -m "First pages commit"; git push origin gh-pages )
 
 all:
 	make cmlib

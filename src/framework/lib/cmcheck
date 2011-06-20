@@ -32,3 +32,13 @@ function is_valid_iface()
 {
 	_cm_list_iface | grep $1 > /dev/null 2>&1
 }
+
+# check if $1 is a valid integer number
+function is_integer()
+{
+	case $1 in
+		''|*[!0-9]*) return -1 ;;
+		*) return 0 ;;
+	esac
+
+}

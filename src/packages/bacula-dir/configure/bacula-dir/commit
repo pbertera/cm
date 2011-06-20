@@ -4,6 +4,8 @@
 # @param $1: bacula-dir		statical part of command
 # @param $2: commit		statical part of command
 
+set -e
+
 . ${__cm_lib_dir}/cmlib
 
 command=$(__cm_command $@)
@@ -12,28 +14,43 @@ param=$(__cm_command_param $@)
 command_path_dir=$(__cm_command_path_dir $@)
 command_name=$(__cm_command_name $@)
 
+bacula_dir_dir_resource_file=${__cm_prefix}/var/lib/bacula-dir/dir_res.conf
+bacula_dir_working_dir=${__cm_prefix}/var/run/bacula-dir/
+
 if [ $__cm_no_command ]; then
 	__cm_db_remove_leaf bacula-dir commit
 	exit 0
 fi
 
-dir_name=$(__cm_db_get_leaf bacula-dir name 2>/dev/null)
-dir_description=$(__cm_db_get_leaf bacula-dir description 2>/dev/null)
-dir_password=$(__cm_db_get_leaf bacula-dir password 2>/dev/null)
+dir_name=$(__cm_db_get_leaf bacula-dir name)
+dir_password=$(__cm_db_get_leaf bacula-dir password)
+
+__cm_db_is_leaf bacula-dir description && dir_description=$(__cm_db_get_leaf bacula-dir description) || dir_description=""
+__cm_db_is_leaf bacula-dir maxjobs && dir_maxjobs=$(__cm_db_get_leaf bacula-dir maxjobs) || dir_maxjobs=1
+__cm_db_is_leaf bacula-dir address && dir_address=$(__cm_db_get_leaf bacula-dir address) || dir_address="0.0.0.0"
 
 export TPL_BACULA_DIR_NAME=$dir_name
 export TPL_BACULA_DIR_PASSWORD=$dir_password
 export TPL_BACULA_DIR_DESCRIPTION=$dir_description
 
-cat << EOF |  _cm_parse_template 
+[ -d "$(dirname $bacula_dir_dir_resource_file)" ] || mkdir -p $(dirname $bacula_dir_dir_resource_file)
+[ -d "$bacula_dir_working_dir" ] || mkdir -p "$bacula_dir_working_dir"
+
+cat << EOF |  _cm_parse_template > $bacula_dir_dir_resource_file
 
 Director {
   Name = \${TPL_BACULA_DIR_NAME}
   Password = \${TPL_BACULA_DIR_PASSWORD}
-  PidDirectory = "\$HOME/bacula/bin/working"
+  Description = "$dir_description"
+  PidDirectory = "$bacula_dir_working_dir"
   QueryFile = "\$HOME/bacula/bin/query.sql"
   Messages = Standard
-  WorkingDirectory = "\$HOME/bacula/bin/working"
+  WorkingDirectory = "$bacula_dir_working_dir"
+  Maximum Concurrent Jobs = $dir_maxjobs
+  DirAddress = $dir_address
 }
 
 EOF
+
+#insert a leaf in db with no value
+__cm_db_set_leaf "" bacula-dir commit

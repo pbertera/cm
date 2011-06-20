@@ -20,7 +20,7 @@
 #@|usage|
 #@
 #@Questo comando imposta l'hostname locale. Il comando normale imposta l'hostname, in modalità negata rimuove l'hostname.
-
+#@
 
 . ${__cm_lib_dir}/cmlib
 

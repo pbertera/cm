@@ -18,7 +18,8 @@ cm save <destination>
 
 |usage|
 
-Questo comando il CMDB nella destionazione indicata dal parametro `destination`. La destinazione puo' essere un file locale oppure un file remoto copiato via scp.
+Questo comando copia  il CMDB nella destionazione indicata dal parametro `destination`. La destinazione puo' essere un file locale oppure un file remoto copiato via scp.
+
 =====================
 cm system name-server
 =====================
@@ -40,6 +41,7 @@ cm system name-server
 |usage|
 
 Questo comando imposta il server DNS da utilizzare per risolvere i nomi di dominio. In forma negata rimuove tale impostazione.
+
 ==================
 cm system hostname
 ==================
@@ -61,6 +63,7 @@ cm system hostname
 |usage|
 
 Questo comando imposta l'hostname locale. Il comando normale imposta l'hostname, in modalità negata rimuove l'hostname.
+
 ==================
 cm system domain
 ==================
@@ -82,6 +85,7 @@ cm system domain
 |usage|
 
 Il comando *cm system domain* imposta il nome di dominio locale.
+
 =============
 cm system end
 =============
@@ -101,3 +105,4 @@ cm system end
 |usage|
 
 Questo comando esce dalla modalità di configurazione.
+

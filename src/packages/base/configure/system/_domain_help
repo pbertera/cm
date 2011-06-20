@@ -20,6 +20,7 @@
 #@|usage|
 #@
 #@Il comando *cm system domain* imposta il nome di dominio locale.
+#@
 
 . ${__cm_lib_dir}/cmlib
 

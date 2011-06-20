@@ -19,7 +19,8 @@
 #@
 #@|usage|
 #@
-#@Questo comando il CMDB nella destionazione indicata dal parametro `destination`. La destinazione puo' essere un file locale oppure un file remoto copiato via scp.
+#@Questo comando copia  il CMDB nella destionazione indicata dal parametro `destination`. La destinazione puo' essere un file locale oppure un file remoto copiato via scp.
+#@
 
 . ${__cm_lib_dir}/cmlib
 

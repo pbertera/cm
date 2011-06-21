@@ -31,6 +31,8 @@ client_name=$(__cm_db_get_leaf bacula-dir client $client_id  name)
 client_password=$(__cm_db_get_leaf bacula-dir client $client_id password)
 client_address=$(__cm_db_get_leaf bacula-dir client $client_id address)
 
+catalog_name="Catalog"
+
 __cm_db_is_leaf bacula-dir client $client_id port && client_port=$(__cm_db_get_leaf bacula-dir client $client_id port) || client_port=9102
 
 [ -d "$(dirname $bacula_dir_client_resource_file)" ] || mkdir -p $(dirname $bacula_dir_client_resource_file)
@@ -43,6 +45,7 @@ Client {
   Password = $client_password
   FD Port = $client_port
   Address = $client_address
+  Catalog = $catalog_name
 }
 
 EOF

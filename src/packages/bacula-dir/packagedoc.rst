@@ -6,7 +6,7 @@ Bacula Director Commands
    **OK** Implemented
 
 .. |TODO| replace::
-   **TODO** To omplement
+   **TODO** To implement
 
 .. |HC| replace::
    **HC** HardCoded
@@ -57,7 +57,7 @@ Directive                 Implementation state
 Name                       |OK|
 Address                    |OK|
 FD Port                    |OK|
-Catalog                    |TODO|
+Catalog                    |OK|
 Password                   |OK|
 File Retention             |TODO|
 Job Retention              |TODO|
@@ -71,6 +71,20 @@ Priority                   |TODO|
 **Pool Resource**
 
 **Catalog Resource**
+
+Per ora esisterà un solo catalog locale e tutti iriferimenti ad esso saranno hardcodati.
+
+========================= ====================
+Directive                 Implementation state
+========================= ====================
+Name                      |TODO|
+password                  |TODO|
+DB Name                   |TODO|
+user                      |TODO|
+DB Socket                 |TODO|
+DB Address                |TODO|
+DB Port                   |TODO|
+========================= ====================
 
 **Messages Resource**
 

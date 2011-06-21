@@ -1,5 +1,20 @@
 #!/bin/bash
-
+#@=====================
+#@cm bacula-dir commit
+#@=====================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir commit
+#@
+#@|negate-command| nocm bacula-dir commit
+#@
+#@|configuration-mode|
+#@
+#@|usage|
+#@
+#@Questo comando applica le confiurazioni del bacula director
+#@
 . ${__cm_lib_dir}/cmlib
 
 __cm_print_help_header $@

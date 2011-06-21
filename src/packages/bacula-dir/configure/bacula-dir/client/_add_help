@@ -1,0 +1,39 @@
+#!/bin/bash
+#@========================
+#@cm bacula-dir client add
+#@========================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir client add <name>
+#@
+#@|negate-command| nocm bacula-dir client add <name>
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `client-id`:  is the identifier of client do add
+#@
+#@|default| `none`
+#@
+#@|usage|
+#@
+#@Questo comando aggiunge i comandi per configurare un nuovo client
+#@
+#@Una volta aggiunto il client sarà possibile configurarlo tramite i comandi
+#@
+#@ *cm bacula-dir client <client-id> \**
+#@
+
+
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "add bacula client"
+echo 
+echo "Parameter: <client-id> The client id"
+
+__cm_print_help_bottom

@@ -1,0 +1,37 @@
+#!/bin/bash
+#@========================================
+#@cm bacula-dir client <client-id> address
+#@========================================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir client <client-id> address <address>
+#@
+#@|negate-command| nocm bacula-dir client <client-id> address
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `address`: The address of client or a fqdn name.
+#@
+#@|default| *none*
+#@
+#@|usage|
+#@
+#@Questo comando imposta l'indirizzo del client, deve essere un indirzzo IP o un fqdn name.
+#@
+
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula client address"
+echo 
+echo "Parameter: <address>"
+echo "Example: "
+echo " cm bacula-dir client test address 192.168.100.20"
+echo " cm bacula-dir client test address my.host.example.com"
+
+__cm_print_help_bottom

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. ${__cm_lib_dir}/cmlib
+
+echo "<name>"

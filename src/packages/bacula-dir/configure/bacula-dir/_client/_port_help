@@ -1,0 +1,36 @@
+#!/bin/bash
+#@=====================================
+#@cm bacula-dir client <client-id> port
+#@=====================================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir client <client-id> port <port>
+#@
+#@|negate-command| nocm bacula-dir client <client-id> port
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `port`: The port of client file server daemon.
+#@
+#@|default| *9102*
+#@
+#@|usage|
+#@
+#@Questo comando imposta la port tcp su cui risponde il client
+#@
+
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula client port"
+echo 
+echo "Parameter: <port>"
+echo "Example: "
+echo " cm bacula-dir client test port 2291"
+
+__cm_print_help_bottom

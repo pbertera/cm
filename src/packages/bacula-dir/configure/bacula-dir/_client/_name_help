@@ -1,0 +1,34 @@
+#!/bin/bash
+#@=====================================
+#@cm bacula-dir client <client-id> name
+#@=====================================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir client <client-id> name <name>
+#@
+#@|negate-command| nocm bacula-dir client <client-id> name <name>
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `name`: The name of client.
+#@
+#@|default| *none*
+#@
+#@|usage|
+#@
+#@Questo comando imposta il nome del client
+#@
+
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula client name"
+echo 
+echo "Parameter: <name>"
+
+__cm_print_help_bottom

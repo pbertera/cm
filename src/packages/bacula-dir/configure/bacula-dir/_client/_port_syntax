@@ -1,0 +1,11 @@
+#!/bin/sh
+
+. ${__cm_lib_dir}/cmlib
+. ${__cm_lib_dir}/cmcheck
+
+if [ $__cm_no_command ]; then
+        exit
+else
+	[ $# -ne 5 ] && exit 1
+	is_integer $5
+fi

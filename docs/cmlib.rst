@@ -215,7 +215,13 @@ Configuration Management Database API
    
    Rimuove la foglia `leaf_path` dal CMDB.
 
-   :param leaf_path: il path del branch
+   :param leaf_path: il path della foglia
+
+.. function:: __cm_db_remove_branch(branch_path)
+   
+   Rimuove il branch `branch_path` dal CMDB.
+
+   :param branch_path: il path del branch
 
 .. function:: __cm_show_conf[branch_path])
    

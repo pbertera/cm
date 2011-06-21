@@ -28,6 +28,7 @@ dir_password=$(__cm_db_get_leaf bacula-dir password)
 __cm_db_is_leaf bacula-dir description && dir_description=$(__cm_db_get_leaf bacula-dir description) || dir_description=""
 __cm_db_is_leaf bacula-dir maxjobs && dir_maxjobs=$(__cm_db_get_leaf bacula-dir maxjobs) || dir_maxjobs=1
 __cm_db_is_leaf bacula-dir address && dir_address=$(__cm_db_get_leaf bacula-dir address) || dir_address="0.0.0.0"
+__cm_db_is_leaf bacula-dir port && dir_port=$(__cm_db_get_leaf bacula-dir port) || dir_port="9101"
 
 export TPL_BACULA_DIR_NAME=$dir_name
 export TPL_BACULA_DIR_PASSWORD=$dir_password
@@ -48,6 +49,7 @@ Director {
   WorkingDirectory = "$bacula_dir_working_dir"
   Maximum Concurrent Jobs = $dir_maxjobs
   DirAddress = $dir_address
+  DirPort = $dir_port
 }
 
 EOF

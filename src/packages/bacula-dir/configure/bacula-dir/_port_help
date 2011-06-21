@@ -1,0 +1,33 @@
+#!/bin/bash
+#@==================
+#@cm bacula-dir port
+#@==================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir port <port>
+#@
+#@|negate-command| nocm bacula-dir port
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `port`: this command will cause the Director server to bind to the specified tcp port,
+#@
+#@|default| *9101*
+#@
+#@|usage|
+#@
+#@Questo comando imposta la porta tcp su cui si mette in ascolto il directos
+#@
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula director listen tcp port"
+echo 
+echo "Parameter: <port> the tcp port of director"
+
+__cm_print_help_bottom

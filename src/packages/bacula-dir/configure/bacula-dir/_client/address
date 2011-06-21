@@ -1,0 +1,28 @@
+#!/bin/sh
+# configure address for bacula client
+# @param $1: bacula-dir:        statical part of command
+# @param $2: client:            statical part of command
+# @param $3: client name:       the name of client (statical)
+# @param $4: address:           statical part of command
+# @param $5: client address:	client address supplied by user
+
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+command_branch_prio=$(__cm_get_command_branch_priority $@)
+command_priority=$(__cm_get_command_priority $@)
+
+
+if [ $__cm_no_command ]; then
+	# no command implementation
+	__cm_db_remove_leaf bacula-dir client "$3" address
+else
+	# command implementation
+	__cm_db_set_leaf "$param" bacula-dir client "$3" address
+fi

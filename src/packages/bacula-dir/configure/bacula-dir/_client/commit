@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# apply configuration in db to system
+# @param $1: bacula-dir		statical part of command
+# @param $2: client		statical part of command
+# @param $3: client-id		statical part of command (client identifier)
+# @param $4: commit		statical part of command
+
+set -e
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+client_id=$3
+
+bacula_dir_client_resource_file=${__cm_prefix}/var/lib/bacula-dir/client_${client_id}_res.conf
+bacula_dir_working_dir=${__cm_prefix}/var/run/bacula-dir/
+
+if [ $__cm_no_command ]; then
+	__cm_db_remove_leaf bacula-dir client $client_id commit
+	rm -f $bacula_dir_client_resource_file
+	exit 0
+fi
+
+client_name=$(__cm_db_get_leaf bacula-dir client $client_id  name)
+client_password=$(__cm_db_get_leaf bacula-dir client $client_id password)
+client_address=$(__cm_db_get_leaf bacula-dir client $client_id address)
+
+__cm_db_is_leaf bacula-dir client $client_id port && client_port=$(__cm_db_get_leaf bacula-dir client $client_id port) || client_port=9102
+
+[ -d "$(dirname $bacula_dir_client_resource_file)" ] || mkdir -p $(dirname $bacula_dir_client_resource_file)
+[ -d "$bacula_dir_working_dir" ] || mkdir -p "$bacula_dir_working_dir"
+
+cat << EOF  > $bacula_dir_client_resource_file
+
+Client {
+  Name = $client_name
+  Password = $client_password
+  FD Port = $client_port
+  Address = $client_address
+}
+
+EOF
+
+#insert a leaf in db with no value
+__cm_db_set_leaf "" bacula-dir client $client_id commit

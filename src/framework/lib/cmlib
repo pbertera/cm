@@ -539,7 +539,7 @@ __cm_db_show_tree()
 #@   
 #@   Rimuove la foglia `leaf_path` dal CMDB.
 #@
-#@   :param leaf_path: il path del branch
+#@   :param leaf_path: il path della foglia
 #@
 __cm_db_remove_leaf()
 {
@@ -549,6 +549,25 @@ __cm_db_remove_leaf()
 		rm -f "$leaf_path_in_db"
 	else
 		__cm_exit_error "the configuration path \"$leaf_path\" not exist in db"
+	fi
+
+}
+
+# remove branch from db: the arguments represent the path of branch
+#@.. function:: __cm_db_remove_branch(branch_path)
+#@   
+#@   Rimuove il branch `branch_path` dal CMDB.
+#@
+#@   :param branch_path: il path del branch
+#@
+__cm_db_remove_branch()
+{
+	local branch_path=$@
+	local branch_path_in_db="$__cm_db_dir"/"${branch_path// //}"
+	if [ -d "$branch_path_in_db" ]; then
+		rm -rf "$branch_path_in_db"
+	else
+		__cm_exit_error "the configuration path \"$branch_path\" not exist in db"
 	fi
 
 }

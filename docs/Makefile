@@ -14,6 +14,6 @@ ghpages:
 
 all:
 	make cmlib
-	make packages
+	make -s packages
 	make build
 	#make ghpages

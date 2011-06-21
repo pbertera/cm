@@ -57,7 +57,7 @@ Directive                 Implementation state
 Name                       |OK|
 Address                    |OK|
 FD Port                    |OK|
-Catalog                    |OK|
+Catalog                    |NO|
 Password                   |OK|
 File Retention             |TODO|
 Job Retention              |TODO|

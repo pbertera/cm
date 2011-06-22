@@ -1,0 +1,37 @@
+#!/bin/bash
+#@==========================================================
+#@cm bacula-dir schedule <schedule-id> run <run-id> timespec
+#@==========================================================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir schedule <schedule-id> run <run-id> timespec <timespec>
+#@
+#@|negate-command| nocm bacula-dir schedule <schedule-id> run <run-id> timespec
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `timespec`: The specification for hourli specification
+#@
+#@|default| *daily*
+#@
+#@|usage|
+#@
+#@Questo comando imposta la specifica per lo scheduling orario
+#@
+
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula daily scheduling"
+echo 
+echo "Parameter: <timespec>"
+echo "Example: "
+echo
+#echo "cm bacula-dir schedule schedule-test run run-test timespec 30"
+
+__cm_print_help_bottom

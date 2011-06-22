@@ -1,0 +1,71 @@
+#!/bin/sh
+
+. ${__cm_lib_dir}/cmlib
+
+function day ()
+{
+	seq 1 31
+}
+
+function wday_keyword()
+{
+	echo "sun"
+	echo "mon"
+	echo "tue" 
+	echo "wed"
+	echo "thu"
+	echo "fri"
+	echo "sat"
+}
+
+function wday_range()
+{
+	for d in $(wday_keyword); do
+		for d1 in $(wday_keyword); do
+			[ "$d" == "$d1" ] || echo "$d-$d1"
+		done
+	done
+}
+
+function week_keyword()
+{
+	echo "1st"
+	echo "2nd"
+	echo "3nd"
+	echo "4nd"
+	echo "5nd"
+}
+
+function week_keyword_range()
+{
+	for k in $(week_keyword); do
+		for r in $(wday_keyword); do
+			echo "$k $r"
+		done
+	done
+}
+
+function week_keyword_wday()
+{
+	for k in $(week_keyword); do
+		for r in $(wday_range); do
+			echo "$k $r"
+		done
+	done
+}
+
+function daily()
+{
+	echo "daily"
+}
+
+function day_spec()
+{
+	day
+	wday_keyword
+	wday_range
+	week_keyword_wday
+	week_keyword_range
+}
+
+day_spec

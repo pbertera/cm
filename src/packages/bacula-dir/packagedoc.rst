@@ -94,5 +94,12 @@ DB Port                   |TODO|
 
 **Schedule Resource**
 
+========================= ====================
+Directive                 Implementation state
+========================= ====================
+Name                       |TODO|
+Run                        |TODO|
+========================= ====================
+
 **FileSet Resource**
 

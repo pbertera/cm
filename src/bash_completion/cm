@@ -26,6 +26,7 @@ __cm_complete_command()
 	dirname=$(dirname $1)
 	filename=$(basename $1)
 	command="${dirname}/_${filename}_complete"
+	local IFS=$'\n'
 	COMPREPLY=()
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	if [ -f "${dirname}/_${filename}_nocomplete" ]; then

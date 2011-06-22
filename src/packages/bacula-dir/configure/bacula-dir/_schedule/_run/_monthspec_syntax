@@ -1,0 +1,24 @@
+#!/bin/sh
+
+. ${__cm_lib_dir}/cmlib
+. ${__cm_lib_dir}/cmcheck
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+command_branch_prio=$(__cm_get_command_branch_priority $@)
+command_priority=$(__cm_get_command_priority $@)
+
+schedule_id=$3
+run_id=$5
+
+
+if [ $__cm_no_command ]; then
+        exit
+else
+	my_dir=$(dirname $0)
+	$my_dir/_monthspec_complete | grep $param > /dev/null 2>&1
+fi

@@ -1,0 +1,26 @@
+#!/bin/sh
+# set ip in configuration database for device
+# @param $1: bacula-dir: 	statical part of command
+# @param $2: schedule: 		statical part of command
+# @param $3: add: 		statical part of command
+# @param $4: name:		name of schedule to add
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+
+if [ $__cm_no_command ]; then
+	[ -L $__cm_configure_libexec_dir/bacula-dir/schedule/$param ] || __cm_exit_error "Bacula schedule $param not exist"
+	__cm_db_remove_branch bacula-dir schedule "$4"
+	rm $__cm_configure_libexec_dir/bacula-dir/schedule/$param
+else
+	[ -L $__cm_configure_libexec_dir/bacula-dir/schedule/$param ] && __cm_exit_error "Bacula schedule $param exist"
+	ln -s ../_schedule $__cm_configure_libexec_dir/bacula-dir/schedule/$param
+	__cm_db_create_branch bacula-dir schedule "$param" 
+	__cm_db_set_leaf "$param" bacula-dir schedule "$param" name
+fi

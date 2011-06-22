@@ -1,0 +1,37 @@
+#!/bin/bash
+#@=========================================================
+#@cm bacula-dir schedule <schedule-id> run <run-id> dayspec
+#@=========================================================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir schedule <schedule-id> run <run-id> dayspec <dayspec>
+#@
+#@|negate-command| nocm bacula-dir schedule <schedule-id> run <run-id> dayspec
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `dayspec`: The specification for monthly scheduling
+#@
+#@|default| *daily*
+#@
+#@|usage|
+#@
+#@Questo comando imposta la specifica per lo scheduling giornalier
+#@
+
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula daily scheduling"
+echo 
+echo "Parameter: <dayspec>"
+echo "Example: "
+echo
+echo "cm bacula-dir schedule schedule-test run run-test dayspec 30"
+
+__cm_print_help_bottom

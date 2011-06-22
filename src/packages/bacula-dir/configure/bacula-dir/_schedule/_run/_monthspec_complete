@@ -1,0 +1,32 @@
+#!/bin/sh
+
+. ${__cm_lib_dir}/cmlib
+
+function month_keyword()
+{
+	echo "jan feb mar apr may jun jul aug sep oct nov dec"
+}
+
+function month_range()
+{
+	for m in $(month_keyword); do
+		for m1 in $(month_keyword); do
+			[ "$m" == "$m1" ] || echo $m-$m1
+		done
+	done	
+}
+
+function monthly_keyword()
+{
+	echo "monthly"
+}
+
+
+function month_spec()
+{
+	month_keyword
+	month_range
+	monthly_keyword
+}
+
+month_spec

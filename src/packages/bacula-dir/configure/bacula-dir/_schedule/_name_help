@@ -1,0 +1,34 @@
+#!/bin/bash
+#@=========================================
+#@cm bacula-dir schedule <schedule-id> name
+#@=========================================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir schedule <schedule-id> name <name>
+#@
+#@|negate-command| nocm bacula-dir schedule <schedule-id> name
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `name`: The name of schedule.
+#@
+#@|default| *none*
+#@
+#@|usage|
+#@
+#@Questo comando imposta il nome del schedule
+#@
+
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula schedule name"
+echo 
+echo "Parameter: <name>"
+
+__cm_print_help_bottom

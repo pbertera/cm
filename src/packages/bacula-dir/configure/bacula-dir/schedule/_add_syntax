@@ -1,0 +1,11 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+. ${__cm_lib_dir}/cmcheck
+
+if [ $__cm_no_command ]; then
+	[ -L $__cm_configure_libexec_dir/bacula-dir/schedule/$4 ] || __cm_exit_error "Bacula schedule $4 not exist"
+else
+	exit 0	
+fi
+

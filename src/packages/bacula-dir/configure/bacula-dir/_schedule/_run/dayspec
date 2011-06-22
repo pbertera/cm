@@ -1,0 +1,31 @@
+#!/bin/sh
+# configure name for bacula schedule
+# @param $1: bacula-dir:        statical part of command
+# @param $2: schedule:            statical part of command
+# @param $3: schedule name:       the name of schedule (statical)
+# @param $4: run:              statical part of command
+# @param $5: run-id:              statical part of command
+# @param $6: dayspec:           statical part of command
+
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+command_branch_prio=$(__cm_get_command_branch_priority $@)
+command_priority=$(__cm_get_command_priority $@)
+
+schedule_id=$3
+run_id=$5
+
+if [ $__cm_no_command ]; then
+	# no command implementation
+	__cm_db_remove_leaf bacula-dir schedule "$schedule_id" run "$run_id" dayspec
+else
+	# command implementation
+	__cm_db_set_leaf "$param" bacula-dir schedule "$schedule_id" run "$run_id" dayspec
+fi

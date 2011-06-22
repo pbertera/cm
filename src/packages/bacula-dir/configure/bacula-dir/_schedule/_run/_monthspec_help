@@ -1,0 +1,37 @@
+#!/bin/bash
+#@===========================================================
+#@cm bacula-dir schedule <schedule-id> run <run-id> monthspec
+#@===========================================================
+#@
+#@|syntax| 
+#@
+#@|normal-command| cm bacula-dir schedule <schedule-id> run <run-id> monthspec <monthspec>
+#@
+#@|negate-command| nocm bacula-dir schedule <schedule-id> run <run-id> monthspec
+#@
+#@|configuration-mode|
+#@
+#@|parameters| 
+#@
+#@* `momnthspec`: The specification for monthly scheduling
+#@
+#@|default| *jan-dec*
+#@
+#@|usage|
+#@
+#@Questo comando imposta la spcifica per lo scheduling mensile
+#@
+
+
+. ${__cm_lib_dir}/cmlib
+
+__cm_print_help_header $@
+
+echo "configure bacula monthly scheduling"
+echo 
+echo "Parameter: <monthspec>"
+echo "Example: "
+echo
+echo "cm bacula-dir schedule schedule-test run run-test monthspec jan"
+
+__cm_print_help_bottom

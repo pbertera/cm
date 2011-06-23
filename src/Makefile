@@ -75,9 +75,8 @@ remove:
 backup:
 	tar czvf /opt/cm-`date +"%s"`.tgz /opt/cm
 
+clean: backup
 clean:
-	make backup	
-	echo "Cleaning"
 	rm -rf "$(CM_LIBDIR)" "$(CM_BINDIR)" "$(CM_CONFIGURE_LIBEXECDIR)" "$(CM_OPERATOR_LIBEXECDIR)"
 	rm -rf $(COMPLETION_DIR)/cm
 	userdel $(CM_CONFIGURE_USER)

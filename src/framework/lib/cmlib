@@ -123,7 +123,14 @@ __cm_command()
 	OIFS=$IFS
 	IFS=$' '
         for entry in ${@}; do
+		cmd_tag="$cmd/_tag"
                 cmd="$cmd/${entry}"
+		if [ -d "$cmd_tag" ]; then
+			if [ -f "$cmd_tag/tag" ]; then
+				command="$command"
+				break
+			fi
+		fi
 		# $cmd don't exist, exit
 		if [ ! -e "$cmd" ]; then 
 			__cm_exit_error "Command not found: $@"
@@ -144,10 +151,10 @@ __cm_command()
 		fi
         done
 	IFS=$IFS
-	if [ ! -f "$cmd" ]; then
-		__cm_exit_error "Command not found: $@"
-		__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
-	fi
+	#if [ ! -f "$cmd" ]; then
+	#	__cm_exit_error "Command not found: $@"
+	#	__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
+	#fi
 	# remove first space
 	echo "${command/ /}"
 }
@@ -166,7 +173,16 @@ __cm_command_path()
 	OIFS=$IFS
 	IFS=$' '
         for entry in ${@}; do
+		__cm_debug $cmd
+		cmd_tag="$cmd/_tag"
                 cmd="$cmd/${entry}"
+		if [ -d "$cmd_tag" ]; then
+			if [ -f "$cmd_tag/tag" ]; then
+				command="$command"
+				cmd="$cmd_tag/tag"
+				break
+			fi
+		fi
 		# $cmd don't exist, exit
 		if [ ! -e "$cmd" ]; then
 			__cm_exit_error "Command not found: $@"
@@ -180,6 +196,9 @@ __cm_command_path()
 		# $cmd is a direcotry: continue the cycle
 		if [ -d "$cmd" ]; then
 			command="$command $entry"
+		if [ -d "$cmd/_tag" ]; then
+			command="$command/_tag/tag"
+		fi
 		# everything else ??? really necessary ?
 		else
 			__cm_exit_error "Command not found: $@"

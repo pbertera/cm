@@ -15,7 +15,8 @@ __cm_complete_indir()
 	alldir=" "
 	for dir in "$root"/*; do	
 		base=$(basename "$dir")
-		[ "${base:0:1}" != "_" ] && alldir="$alldir $base" 
+		[ "${base:0:1}" != "_" ] && alldir="$alldir $base"
+		[ "$base" == "_tag" ] && alldir="$alldir $($root/_tag/_tag_complete)"
 	done
 	COMPREPLY=($(compgen -W "$alldir" -- "$cur" ))
 	return 
@@ -53,7 +54,7 @@ __cm_complete()
 	prev_opts=${COMP_WORDS[@]:1:$((${#COMP_WORDS[@]} - 2))}
 	prev_opts_path=${__cm_libexec_dir}/${prev_opts// /\/}
 	# root of tree
-	#echo $opts_path
+	# echo $opts_path
 	if [ "$prev" == "cm" ]; then
 		command=""
 		__cm_complete_indir

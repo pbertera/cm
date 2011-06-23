@@ -5,15 +5,14 @@ set -e
 . ${__cm_lib_dir}/cmlib
 
 command=$(__cm_command $@)
-command_path=$(__cm_command_path $@)
-param=$(__cm_command_param $@)
-command_path_dir=$(__cm_command_path_dir $@)
-command_name=$(__cm_command_name $@)
-
 __cm_debug "Command: $command"
+command_path=$(__cm_command_path $@)
 __cm_debug "Command path: $command_path"
+param=$(__cm_command_param $@)
 __cm_debug "Command params: $param"
+command_path_dir=$(__cm_command_path_dir $@)
 __cm_debug "Command path dir: $command_path_dir"
+command_name=$(__cm_command_name $@)
 __cm_debug "Command name: $command_name"
 
 [ $__cm_no_command ] && __cm_debug "No command"

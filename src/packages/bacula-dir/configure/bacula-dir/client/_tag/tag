@@ -16,11 +16,13 @@ command_name=$(__cm_command_name $@)
 
 if [ $__cm_no_command ]; then
 	[ -L $__cm_configure_libexec_dir/bacula-dir/client/$param ] || __cm_exit_error "Bacula client $param not exist"
-	__cm_db_remove_branch bacula-dir client "$4"
-	rm $__cm_configure_libexec_dir/bacula-dir/client/$param
+	#__cm_db_remove_branch bacula-dir client "$4"
+	#rm $__cm_configure_libexec_dir/bacula-dir/client/$param
 else
-	[ -L $__cm_configure_libexec_dir/bacula-dir/client/$param ] && __cm_exit_error "Bacula client $param exist"
-	ln -s ../_client $__cm_configure_libexec_dir/bacula-dir/client/$param
-	__cm_db_create_branch bacula-dir client "$param" 
-	__cm_db_set_leaf "$param" bacula-dir client "$param" name
+	echo "RUNNING TAG"
+	echo $@
+	#[ -L $__cm_configure_libexec_dir/bacula-dir/client/$param ] && __cm_exit_error "Bacula client $param exist"
+	#ln -s ../_client $__cm_configure_libexec_dir/bacula-dir/client/$param
+	#__cm_db_create_branch bacula-dir client "$param" 
+	#__cm_db_set_leaf "$param" bacula-dir client "$param" name
 fi

@@ -1,0 +1,62 @@
+#!/bin/bash
+
+. cmlib
+
+make_tmpdir()
+{
+	readonly TMPDIR=$(mktemp -p /tmp -d)
+}
+
+clean_tmpdir()
+{
+	rm -rf "$TMPDIR"
+}
+
+test___cm_is_command_tagged_branch()
+{
+	# command "uno" is a command tag node
+	mkdir -p $TMPDIR/uno/_tag/
+	cat << EOF > $TMPDIR/uno/_tag/tag
+#!/bin/bash
+
+echo "UNO TAG"
+EOF
+
+	chmod +x $TMPDIR/uno/_tag/tag
+	
+	# command "uno due" is a command node
+	mkdir -p $TMPDIR/uno/_tag/due
+
+	# command "uno due tre" is a command leaf
+	cat << EOF > $TMPDIR/uno/_tag/due/tre
+#!/bin/bash
+
+echo TRE in DUE
+EOF
+	chmod +x $TMPDIR/uno/_tag/due/tre
+
+	# command "uno due quattro" is a command tag node
+	mkdir -p $TMPDIR/uno/_tag/due/quattro/_tag
+	cat << EOF > $TMPDIR/uno/_tag/due/quattro/_tag/tag
+#!/bin/bash
+
+echo QUATTRO in DUE
+EOF
+	chmod +x $TMPDIR/uno/_tag/due/quattro
+
+	__cm_debug=1	
+	__cm_libexec_dir="$TMPDIR"
+	
+	#__cm_analyze_command uno	
+	#__cm_analyze_command uno due 
+	#__cm_analyze_command uno uno_name due
+	#__cm_analyze_command uno uno_name tre
+	__cm_analyze_command uno uno_name due quattro
+	__cm_analyze_command uno uno_name due quattro cinque
+}
+
+make_tmpdir
+
+test___cm_is_command_tagged_branch
+
+clean_tmpdir

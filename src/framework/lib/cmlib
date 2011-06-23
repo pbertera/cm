@@ -125,22 +125,27 @@ __cm_command()
         for entry in ${@}; do
 		cmd_tag="$cmd/_tag"
                 cmd="$cmd/${entry}"
+
+		# command is a tag node
 		if [ -d "$cmd_tag" ]; then
 			if [ -f "$cmd_tag/tag" ]; then
 				command="$command"
 				break
 			fi
 		fi
+
 		# $cmd don't exist, exit
 		if [ ! -e "$cmd" ]; then 
 			__cm_exit_error "Command not found: $@"
 			__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
 		fi
+
 		# $cmd is a file: command found, break cycle
 		if [ -f "$cmd" ]; then 
 			command="$command $entry"
 			break
 		fi
+
 		# $cmd is a direcotry: continue the cycle
 		if [ -d "$cmd" ]; then
 			command="$command $entry"
@@ -163,7 +168,8 @@ __cm_command()
 #@   
 #@   Stampa il path dello script che implementa il comando ``command``
 #@
-#@   :param command: il comando senza parametri
+#@   :param command: il comando di cui si vuole conoscere il path del performer. 
+#@    Deve essere il coamndo senza parametri
 #@   :type command: String
 #@
 __cm_command_path()
@@ -174,13 +180,13 @@ __cm_command_path()
 	IFS=$' '
         for entry in ${@}; do
 		__cm_debug $cmd
-		cmd_tag="$cmd/_tag"
+		cmd_tag="$cmd/${entry}/_tag"
                 cmd="$cmd/${entry}"
 		if [ -d "$cmd_tag" ]; then
 			if [ -f "$cmd_tag/tag" ]; then
 				command="$command"
-				cmd="$cmd_tag/tag"
-				break
+				cmd="$cmd_tag"
+				#break
 			fi
 		fi
 		# $cmd don't exist, exit
@@ -196,7 +202,7 @@ __cm_command_path()
 		# $cmd is a direcotry: continue the cycle
 		if [ -d "$cmd" ]; then
 			command="$command $entry"
-		if [ -d "$cmd/_tag" ]; then
+		if [ -e "$cmd/tag" ]; then
 			command="$command/_tag/tag"
 		fi
 		# everything else ??? really necessary ?
@@ -243,7 +249,7 @@ __cm_is_command()
 	return 1
 }
 
-#@.. function:: __cm_is_branch(command)
+#@.. function:: __cm_is_command_branch(command)
 #@   
 #@   ritorna 0 se il comando ``command`` è un ramo, altrimenti 1
 #@
@@ -259,6 +265,73 @@ __cm_is_command_branch()
 	__cm_debug "Checking command branch \"$@\", path: $command_path"
 	[ -d "$command_path" ] && return 0
 	return 1
+}
+
+__cm_is_command_tagged_branch()
+{
+	local branch=
+	for branch in $@; do
+		local command_path="${__cm_libexec_dir}/${branch// //}/_tag/tag"
+		__cm_debug "Checking command tagged branch \"$@\", path: $command_path"
+		[ -f "$command_path" ] && return 0
+	done
+	return 1
+}
+
+__cm_analyze_command()
+{
+	path="${__cm_libexec_dir}"
+
+	node_type=
+	command=
+	performer=
+
+	i=0
+	for node in $@; do
+		command="$command $node"
+		if [ "$node_type" == "tag" ]; then
+			[ "$i" == "$#" ] && break
+			[ $i -lt $# ] && node_type=tag_name
+			i=$(expr $i + 1)
+			continue
+		fi
+		if [ -d "$path/$node/_tag" ]; then
+			# command is a tag
+			path="$path/$node/_tag"
+			node_type=tag
+			i=$(expr $i + 1)
+			continue
+
+		elif [ -d "$path/$node" ]; then
+			# command is a node
+			path="$path/$node"
+			node_type=node
+			i=$(expr $i + 1)
+			continue
+
+		elif [ -f "$path/$node" ]; then
+			# command is a leaf
+			path="$path/$node"
+			node_type=leaf
+			i=$(expr $i + 1)
+			continue
+		else
+			__cm_exit_error "Command \"${command/ /}\" not found"
+		fi
+	done
+
+	if [ "$node_type" == "tag" ]; then
+		performer="$path/tag"
+	elif [ "$node_type" == "node" ]; then
+		performer=
+	elif [ "$node_type" == "leaf" ]; then
+		performer=$path
+	fi
+	
+	echo "===="
+	echo "command:${command/ /}"
+	echo "type:$node_type"
+	echo "performer:$performer"
 }
 
 #@.. function:: __cm_get_command_branch_priority(command_branch)

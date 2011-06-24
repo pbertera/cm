@@ -42,17 +42,18 @@ EOF
 
 echo QUATTRO in DUE
 EOF
-	chmod +x $TMPDIR/uno/_tag/due/quattro
+	chmod +x $TMPDIR/uno/_tag/due/quattro/_tag/tag
 
 	__cm_debug=1	
 	__cm_libexec_dir="$TMPDIR"
 	
-	#__cm_analyze_command uno	
-	#__cm_analyze_command uno due 
-	#__cm_analyze_command uno uno_name due
-	#__cm_analyze_command uno uno_name tre
-	__cm_analyze_command uno uno_name due quattro
-	__cm_analyze_command uno uno_name due quattro cinque
+#	__cm_command_path uno
+#	__cm_is_command_tag uno due due tre; echo $?
+	__cm_analyze_command uno due due tre aaaa
+#	__cm_command_path uno uno_name due
+#	__cm_command_path uno uno_name due tre
+#	__cm_command_path uno uno_name due quattro
+#	__cm_command_path uno uno_name due quattro cinque
 }
 
 make_tmpdir

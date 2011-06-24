@@ -118,50 +118,14 @@ __cm_command_name()
 #@
 __cm_command()
 {
-        local cmd="${__cm_libexec_dir}"
-	local command=""
 	OIFS=$IFS
-	IFS=$' '
-        for entry in ${@}; do
-		cmd_tag="$cmd/_tag"
-                cmd="$cmd/${entry}"
-
-		# command is a tag node
-		if [ -d "$cmd_tag" ]; then
-			if [ -f "$cmd_tag/tag" ]; then
-				command="$command"
-				break
-			fi
-		fi
-
-		# $cmd don't exist, exit
-		if [ ! -e "$cmd" ]; then 
-			__cm_exit_error "Command not found: $@"
-			__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
-		fi
-
-		# $cmd is a file: command found, break cycle
-		if [ -f "$cmd" ]; then 
-			command="$command $entry"
-			break
-		fi
-
-		# $cmd is a direcotry: continue the cycle
-		if [ -d "$cmd" ]; then
-			command="$command $entry"
-		# everything else ??? really necessary ?
-		else
-			__cm_exit_error "Command not found: $@"
-			__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
-		fi
-        done
-	IFS=$IFS
-	#if [ ! -f "$cmd" ]; then
-	#	__cm_exit_error "Command not found: $@"
-	#	__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
-	#fi
-	# remove first space
-	echo "${command/ /}"
+	IFS=$'\n'
+	for line in $(__cm_analyze_command $@); do
+		case $line in
+			command:*) echo ${line/*:/}
+		esac
+	done
+	IFS=$OIFS
 }
 
 #@.. function:: __cm_command_path(command)
@@ -174,49 +138,14 @@ __cm_command()
 #@
 __cm_command_path()
 {
-        local cmd="${__cm_libexec_dir}"
-	local command=""
 	OIFS=$IFS
-	IFS=$' '
-        for entry in ${@}; do
-		__cm_debug $cmd
-		cmd_tag="$cmd/${entry}/_tag"
-                cmd="$cmd/${entry}"
-		if [ -d "$cmd_tag" ]; then
-			if [ -f "$cmd_tag/tag" ]; then
-				command="$command"
-				cmd="$cmd_tag"
-				#break
-			fi
-		fi
-		# $cmd don't exist, exit
-		if [ ! -e "$cmd" ]; then
-			__cm_exit_error "Command not found: $@"
-			__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
-		fi
-		# $cmd is a file: command found, break cycle
-		if [ -f "$cmd" ]; then 
-			command="$command $entry"
-			break
-		fi
-		# $cmd is a direcotry: continue the cycle
-		if [ -d "$cmd" ]; then
-			command="$command $entry"
-		if [ -e "$cmd/tag" ]; then
-			command="$command/_tag/tag"
-		fi
-		# everything else ??? really necessary ?
-		else
-			__cm_exit_error "Command not found: $@"
-			__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
-		fi
-        done
-	IFS=$IFS
-	if [ ! -f "$cmd" ]; then
-		__cm_exit_error "Command not found: $@"
-		__cm_debug "$FUNCNAME: Command not found: $@. libexec path: $cmd"
-	fi
-	echo "${cmd}"
+	IFS=$'\n'
+	for line in $(__cm_analyze_command $@); do
+		case $line in
+			path:*) echo ${line/*:/}
+		esac
+	done
+	IFS=$OIFS
 }
 
 #@.. function:: __cm_command_path_dir(command)
@@ -232,24 +161,51 @@ __cm_command_path_dir()
 	echo $(dirname "$command_path")
 }
 
-#@.. function:: __cm_is_command(command)
+#@.. function:: __cm_is_command_leaf(command)
 #@   
-#@   ritorna 0 se il comando ``command`` è un comando, altrimenti 1
+#@   ritorna 0 se il comando ``command`` è una foglia, altrimenti 1
 #@
 #@   :param command: il comando senza parametri
 #@   :type command: String
 #@   :rtype: Integer
 #@
-__cm_is_command()
+__cm_is_command_leaf()
 {
-	#check path silently
-	command_path=$(__cm_command_path $@)
-	__cm_debug "checking command \"$@\", path: $command_path"
-	[ -e "$command_path" ] && return 0
+        OIFS=$IFS
+        IFS=$'\n'
+	# use eval for remove quoting
+        for line in $(__cm_analyze_command $@ 2>/dev/null); do
+                case $line in
+                        type:*) [ "${line/*:/}" == "leaf" ] && return 0
+                esac
+        done
+        IFS=$OIFS	
 	return 1
 }
 
-#@.. function:: __cm_is_command_branch(command)
+#@.. function:: __cm_is_command_tag(command)
+#@   
+#@   ritorna 0 se il comando ``command`` è un nodo tag, altrimenti 1
+#@
+#@   :param command: il comando senza parametri
+#@   :type command: String
+#@   :rtype: Integer
+#@
+__cm_is_command_tag()
+{
+        OIFS=$IFS
+        IFS=$'\n'
+        for line in $(__cm_analyze_command $@ 2>/dev/null); do
+                case $line in
+                        type:*) [ "${line/*:/}" == "tag" ] && return 0
+                esac
+        done
+        IFS=$OIFS	
+	return 1
+}
+
+
+#@.. function:: __cm_is_command_node(command)
 #@   
 #@   ritorna 0 se il comando ``command`` è un ramo, altrimenti 1
 #@
@@ -257,81 +213,81 @@ __cm_is_command()
 #@   :type command: String
 #@   :rtype: Integer
 #@
-__cm_is_command_branch()
+__cm_is_command_node()
 {
-	#check path silently
-	local branch=$@
-	local command_path="$__cm_libexec_dir"/"${branch// //}"
-	__cm_debug "Checking command branch \"$@\", path: $command_path"
-	[ -d "$command_path" ] && return 0
+        OIFS=$IFS
+        IFS=$'\n'
+        for line in $(__cm_analyze_command $@ 2>/dev/null); do
+                case $line in
+                        type:*) [ "${line/*:/}" == "node" ] && return 0
+                esac
+        done
+        IFS=$OIFS	
 	return 1
 }
 
-__cm_is_command_tagged_branch()
-{
-	local branch=
-	for branch in $@; do
-		local command_path="${__cm_libexec_dir}/${branch// //}/_tag/tag"
-		__cm_debug "Checking command tagged branch \"$@\", path: $command_path"
-		[ -f "$command_path" ] && return 0
-	done
-	return 1
-}
-
+#@.. function __cm_analyze_command(command)
+#@
+#@   stampa `type` e `performer` per il comando passato.
+#@   `type` puo' essere **tag**, **node** o **leaf** a seconda del tipo di comando
+#@
+#@   :param command: il comando da analizzare
+#@   :type command: string
+#@   :rtype: String
 __cm_analyze_command()
 {
 	path="${__cm_libexec_dir}"
-
-	node_type=
 	command=
+	node_type=
 	performer=
-
-	i=0
-	for node in $@; do
-		command="$command $node"
-		if [ "$node_type" == "tag" ]; then
-			[ "$i" == "$#" ] && break
-			[ $i -lt $# ] && node_type=tag_name
-			i=$(expr $i + 1)
-			continue
-		fi
-		if [ -d "$path/$node/_tag" ]; then
-			# command is a tag
-			path="$path/$node/_tag"
-			node_type=tag
-			i=$(expr $i + 1)
-			continue
-
-		elif [ -d "$path/$node" ]; then
-			# command is a node
-			path="$path/$node"
-			node_type=node
-			i=$(expr $i + 1)
-			continue
-
-		elif [ -f "$path/$node" ]; then
-			# command is a leaf
-			path="$path/$node"
-			node_type=leaf
-			i=$(expr $i + 1)
-			continue
-		else
-			__cm_exit_error "Command \"${command/ /}\" not found"
-		fi
-	done
-
-	if [ "$node_type" == "tag" ]; then
-		performer="$path/tag"
-	elif [ "$node_type" == "node" ]; then
-		performer=
-	elif [ "$node_type" == "leaf" ]; then
-		performer=$path
-	fi
 	
-	echo "===="
-	echo "command:${command/ /}"
-	echo "type:$node_type"
-	echo "performer:$performer"
+	while (( "$#" )); do
+		cur=${1/ //}
+		command="$command $cur"
+		#path="$path/${cur/ /}"
+		path="$path/${cur}"
+		path=${path/ /}
+		if [ -d "$path/_tag" ]; then
+			node_type=tag
+			path="$path/_tag"
+			performer="$path/tag"
+			completion_helper="$path/_tag_complete"
+			syntax_checker="$path/_tag_syntax"
+			help_script="$path/_tag_help"
+			shift
+		elif [ -d "$path" ]; then
+			node_type=node
+			performer=
+			completion_helper=
+			syntax_checker=
+			help_script=
+		elif [ -f "$path" ]; then
+			node_type=leaf
+			performer="$path"	
+			completion_helper="$path/$cur"
+			syntax_checker="$path/_$cur_syntax"
+			syntax_checker="$path/_$cur_help"
+			break
+		else
+			__cm_exit_error "Command not found: -$command-"
+		fi
+		shift
+	done
+	echo command:${command/ /}
+	echo type:$node_type
+	echo performer:$performer
+	echo path:$path
+}
+
+__cm_list_node(){
+	path=$(__cm_command_path $@)
+	__cm_is_command_tag $@
+	[ "$?" == "0" ] && return
+	for node in $path/*; do
+		node=$(basename $node)
+		[ "${node:0:1}" != "_" ] && echo $node
+
+	done
 }
 
 #@.. function:: __cm_get_command_branch_priority(command_branch)
@@ -397,9 +353,9 @@ __cm_get_command_priority()
 __cm_db_create_branch()
 {
 	branch=$@
-	__cm_is_command_branch $branch
+	__cm_is_command_node $branch
 	if [ $? == 0 ]; then
-		local path_in_db="$(__cm_db_branch_to_path $branch)"
+		local path_in_db="$(__cm_db_node_to_path $branch)"
 		__cm_debug "Creating branch $path_in_db in database"
 		mkdir -p $path_in_db
 	else
@@ -424,8 +380,8 @@ __cm_db_set_leaf()
 	local value=$1
 	local branch=${@:2:$((${#@} - 2))}
 	local leaf=${@:${#@}}
-	local path_in_db="$(__cm_db_branch_to_path $branch)"
-	__cm_is_command $branch $leaf
+	local path_in_db="$(__cm_db_node_to_path $branch)"
+	__cm_is_command_leaf $branch $leaf
 	if [ $? == 0 ]; then
 		[ -d "$path_in_db" ] || __cm_db_create_branch $branch
 		__cm_debug "Setting leaf $path_in_db/$leaf in database"
@@ -453,8 +409,8 @@ __cm_db_append_leaf()
 	local branch=${@:2:$((${#@} - 2))}
 	local leaf=${@:${#@}}
 	
-	local path_in_db="$(__cm_db_branch_to_path $branch)"
-	__cm_is_command $branch $leaf
+	local path_in_db="$(__cm_db_node_to_path $branch)"
+	__cm_is_command_leaf $branch $leaf
 	if [ $? == 0 ]; then
 		[ -d "$path_in_db" ] || __cm_db_create_branch $branch
 		__cm_debug "Appending to leaf $path_in_db/$leaf in database"
@@ -479,7 +435,7 @@ __cm_db_get_leaf()
 {	
 	local branch="$@"
 	#local leaf_path_in_db="$__cm_db_dir"/"${leaf_path// //}"
-	local path=$(__cm_db_branch_to_path $branch)
+	local path=$(__cm_db_node_to_path $branch)
 	__cm_db_is_leaf "$branch"
 	if [ $? == 0 ];then 
 		cat "$path"
@@ -488,17 +444,17 @@ __cm_db_get_leaf()
 	fi
 }
 
-#@.. function:: __cm_db_list_branches_sorted_priority(branch_path)
+#@.. function:: __cm_db_list_nodes_sorted_priority(node_path)
 #@   
-#@   Elenca i branch figli di `branch_path` ordinati per priorità all'interno del CMDB.
+#@   Elenca i nodi figli di `node_path` ordinati per priorità all'interno del CMDB.
 #@   Viene stampata anche la priorità
 #@
-#@   :param branch_path: il path del branch
+#@   :param node_path: il path del node
 #@
-__cm_db_list_branches_sorted_priority()
+__cm_db_list_nodes_sorted_priority()
 {
 	branch=${@}
-	start_path=$(__cm_db_branch_to_path $branch)
+	start_path=$(__cm_db_node_to_path $branch)
 	if [ -d "$start_path" ];then
 		for b in $start_path/*; do
 			[ -d "$b" ] || continue
@@ -512,25 +468,24 @@ __cm_db_list_branches_sorted_priority()
 	fi
 } 
 
-#@.. function:: __cm_db_list_branches_sorted(branch_path)
+#@.. function:: __cm_db_list_nodes_sorted(node_path)
 #@   
-#@   Elenca i branch figli di `branch_path` ordinati per priorità all'interno del CMDB.
+#@   Elenca i nodi figli di `node_path` ordinati per priorità all'interno del CMDB.
 #@
-#@   :param branch_path: il path del branch
+#@   :param node_path: il path del nodo
 #@
-__cm_db_list_branches_sorted()
+__cm_db_list_nodes_sorted()
 { 
-	__cm_db_list_branches_sorted_priority $@ | cut -d: -f2
+	__cm_db_list_nodes_sorted_priority $@ | cut -d: -f2
 }
 
-# return filesystem path for a branch
-#@.. function:: __cm_db_branch_to_path(branch_path)
+#@.. function:: __cm_db_node_to_path(node_path)
 #@   
-#@   Stampa il path del filesystem associato a `branch_path`.
+#@   Stampa il path del filesystem associato a `node_path`.
 #@
-#@   :param branch_path: il path del branch
+#@   :param node_path: il path del node
 #@
-__cm_db_branch_to_path()
+__cm_db_node_to_path()
 {
 	local branch=$@
 	local start_path="$__cm_db_dir"
@@ -538,17 +493,17 @@ __cm_db_branch_to_path()
 	echo $branch_path
 }
 
-#@.. function:: __cm_db_list_leaf_sorted(branch_path)
+#@.. function:: __cm_db_list_leaf_sorted(node_path)
 #@   
-#@   Elenca le foglie figlie di `branch_path` ordinate per priorità all'interno del CMDB.
+#@   Elenca le foglie figlie di `node_path` ordinate per priorità all'interno del CMDB.
 #@   Viene stampata anche la priorità
 #@
-#@   :param branch_path: il path del branch
+#@   :param branch_path: il path del node
 #@
 __cm_db_list_leaf_sorted_priority()
 {
 	local branch=$@
-	local path=$(__cm_db_branch_to_path $branch)
+	local path=$(__cm_db_node_to_path $branch)
 	for leaf_name in $( ls -1 $path); do
 		__cm_db_is_leaf "$branch $leaf_name"
 		if [ $? == 0 ]; then
@@ -559,24 +514,17 @@ __cm_db_list_leaf_sorted_priority()
 	done | sort -n -k1 -t:
 }
 
-#@.. function:: __cm_db_list_leaf_sorted(branch_path)
+#@.. function:: __cm_db_list_leaf_sorted(node_path)
 #@   
-#@   Elenca le foglie figlie di `branch_path` ordinate per priorità all'interno del CMDB.
+#@   Elenca le foglie figlie di `node_path` ordinate per priorità all'interno del CMDB.
 #@
-#@   :param branch_path: il path del branch
+#@   :param branch_path: il path del node
 #@
 __cm_db_list_leaf_sorted()
 {
 	__cm_db_list_leaf_sorted_priority $@ | cut -d: -f2-
 }
 
-#__cm_db_show_leaf_sorted()
-#{
-#	local branch=$@
-#	for leaf in $(__cm_db_list_leaf_sorted $branch); do
-#		__cm_db_get_leaf "$branch $leaf"
-#	done
-#}
 
 #@.. function:: __cm_db_is_leaf(leaf_path)
 #@   
@@ -589,7 +537,7 @@ __cm_db_list_leaf_sorted()
 __cm_db_is_leaf()
 {
 	local branch=$@
-	local path=$(__cm_db_branch_to_path $branch)
+	local path=$(__cm_db_node_to_path $branch)
 	local filename=$(basename $path)
 
 	[ "${filename:0:1}" == "_" ] && return 1
@@ -610,7 +558,7 @@ __cm_db_show_tree()
 	fi
 	OIFS=$IFS
 	IFS=$'\n'
-	for branch in $(__cm_db_list_branches_sorted $tree); do
+	for branch in $(__cm_db_list_nodes_sorted $tree); do
 		for leaf_name in $(__cm_db_list_leaf_sorted $branch); do
 			__cm_db_is_leaf "$branch $leaf_name"
 			[ $? == 1 ] && continue

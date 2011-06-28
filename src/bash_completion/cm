@@ -1,33 +1,12 @@
+#!/bin/bash
 #. cmlib
 . ${__cm_lib_dir}/cmlib
 
-# $1 = dir to list
-__cm_complete_node()
-{
-	local root alldir base
-	cur="${COMP_WORDS[COMP_CWORD]}"
-	if [ -z "$1" ]; then
-		root="$__cm_libexec_dir"
-	else
-		root="${1}"
-	fi
-	
-	COMPREPLY=()
-	
-	alldir=" "
-	for dir in "$root"/*; do	
-		base=$(basename "$dir")
-		[ "${base:0:1}" != "_" ] && alldir="$alldir $base"
-	done
-	COMPREPLY=($(compgen -W "$alldir" -- "$cur" ))
-	return 
-}
-
 __cm_complete_leaf()
 {
-	local dirname filename command cur complete
-	dirname=$(dirname $1)
-	filename=$(basename $1)
+	local dirname filename command cur
+	dirname=$(dirname $__cm_complete_path)
+	filename=$(basename $__cm_complete_path)
 	command="${dirname}/_${filename}_complete"
 	#local IFS=$'\n'
 	COMPREPLY=()
@@ -39,39 +18,93 @@ __cm_complete_leaf()
 		return
 	fi
 	if [ -x "$command" ]; then
-		complete=$($command) #TODO: fix complete for nocm command
-		COMPREPLY=($(compgen -W "$complete" -- "$cur"))
+		COMPREPLY=($(compgen -W "$($command)" -- "$cur"))
+	fi
+}
+
+__cm_complete_tag()
+{
+	local command cur
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	
+	if [ "$(basename $__cm_complete_path)" == "_tag" ]; then # tag terminated
+			COMPREPLY=($(compgen -W "$(__cm_list_node $*)" -- "$cur" ))
+			return
+	fi
+	
+	command="${__cm_complete_path}/_tag_complete"
+	if [ -f "${__cm_complete_path}/_tag_nocomplete" ]; then
+		echo
+		eval $command
+		echo -n "${__cm_prompt}${COMP_WORDS[@]}"
+		return
+	fi
+	
+	if [ -x "${__cm_complete_path}/_tag_complete" ]; then
+		COMPREPLY=($(compgen -W "$($command)" -- "$cur"))
+		return
 	fi
 }
 
 __cm_complete()
 {
-	local cur prev __cm_root_all path command
+	local opts prev_opts cur
+		
+	__cm_complete_path=
 	cur=${COMP_WORDS[COMP_CWORD]}
-	prev=${COMP_WORDS[COMP_CWORD-1]}
-
 	opts=${COMP_WORDS[@]:1}
 	prev_opts=${COMP_WORDS[@]:1:$((${#COMP_WORDS[@]} - 2))}
-	#COMPREPLY=()
-	if [ "$prev" == "cm" ]; then
+	COMPREPLY=()
+		
+	__cm_complete_path=$(__cm_command_path $prev_opts)
+	
+	if [ "$COMP_CWORD" == "1" ]; then
 		COMPREPLY=($(compgen -W "$(__cm_list_node)" -- "$cur" ))
 		return
 	fi
-	
+
+	# command is a tag
+	__cm_is_command_tag $opts
+	if [ "$?" == "0" ]; then
+		__cm_complete_tag $opts
+		return
+	fi
+
+	# command is a node	
 	__cm_is_command_node $opts
 	if [ "$?" == "0" ]; then
 		COMPREPLY=($(compgen -W "$(__cm_list_node $opts)" -- "$cur" ))
 		return
 	fi
-	# prev is a node
+
+	# previous command is a node
 	__cm_is_command_node $prev_opts
 	if [ "$?" == "0" ]; then
 		COMPREPLY=($(compgen -W "$(__cm_list_node $prev_opts)" -- "$cur" ))
 		return
 	fi
+	
+	# previous command is a tag
+	__cm_is_command_tag $prev_opts 
+	if [ "$?" == "0" ]; then
+		#__cm_complete_tag $prev_opts
+		COMPREPLY=($(compgen -W "$(__cm_list_node $prev_opts)" -- "$cur" ))
+		return
+	fi
 
-	echo "NOT FOUND"
-	#return 0
+	# previous command is a leaf
+	if __cm_is_command_leaf $prev_opts; then
+		__cm_complete_leaf $prev_opts
+		return
+	fi
+
+	# command is a leaf
+	if __cm_is_command_leaf $opts; then
+		COMPREPLY=()
+		return
+	fi	
+	
 }
 
 complete -F __cm_complete cm

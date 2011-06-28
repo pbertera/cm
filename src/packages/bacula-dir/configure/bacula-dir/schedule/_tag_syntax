@@ -1,0 +1,7 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+. ${__cm_lib_dir}/cmcheck
+
+exit 0	
+

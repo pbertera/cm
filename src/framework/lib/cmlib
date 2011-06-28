@@ -176,7 +176,10 @@ __cm_is_command_leaf()
 	# use eval for remove quoting
         for line in $(__cm_analyze_command $@ 2>/dev/null); do
                 case $line in
-                        type:*) [ "${line/*:/}" == "leaf" ] && return 0
+                        type:*) if [ "${line/*:/}" == "leaf" ]; then 
+					IFS=$OIFS
+					return 0
+				fi
                 esac
         done
         IFS=$OIFS	
@@ -197,7 +200,10 @@ __cm_is_command_tag()
         IFS=$'\n'
         for line in $(__cm_analyze_command $@ 2>/dev/null); do
                 case $line in
-                        type:*) [ "${line/*:/}" == "tag" ] && return 0
+                        type:*) if [ "${line/*:/}" == "tag" ]; then 
+					IFS=$OIFS
+					return 0
+				fi
                 esac
         done
         IFS=$OIFS	
@@ -219,7 +225,10 @@ __cm_is_command_node()
         IFS=$'\n'
         for line in $(__cm_analyze_command $@ 2>/dev/null); do
                 case $line in
-                        type:*) [ "${line/*:/}" == "node" ] && return 0
+                        type:*) if [ "${line/*:/}" == "node" ]; then 
+					IFS=$OIFS
+					return 0
+				fi
                 esac
         done
         IFS=$OIFS	
@@ -236,31 +245,37 @@ __cm_is_command_node()
 #@   :rtype: String
 __cm_analyze_command()
 {
+	local cur path command performer 
 	path="${__cm_libexec_dir}"
 	command=
 	node_type=
 	performer=
-	
+	OIFS=$IFS
 	while (( "$#" )); do
-		cur=${1/ //}
+		cur=${1// //}
 		command="$command $cur"
 		#path="$path/${cur/ /}"
 		path="$path/${cur}"
 		path=${path/ /}
 		if [ -d "$path/_tag" ]; then
 			node_type=tag
-			path="$path/_tag"
-			performer="$path/tag"
+			#performer="$path/tag_performer"
 			completion_helper="$path/_tag_complete"
 			syntax_checker="$path/_tag_syntax"
 			help_script="$path/_tag_help"
+			if [ $# -ge 2 ]; then
+				command="$command $2"
+				path="$path/_tag"
+			fi
 			shift
+
 		elif [ -d "$path" ]; then
 			node_type=node
 			performer=
 			completion_helper=
 			syntax_checker=
 			help_script=
+
 		elif [ -f "$path" ]; then
 			node_type=leaf
 			performer="$path"	
@@ -268,8 +283,9 @@ __cm_analyze_command()
 			syntax_checker="$path/_$cur_syntax"
 			syntax_checker="$path/_$cur_help"
 			break
+
 		else
-			__cm_exit_error "Command not found: -$command-"
+			__cm_exit_error "Command not found: ${command/ /}"
 		fi
 		shift
 	done
@@ -281,8 +297,10 @@ __cm_analyze_command()
 
 __cm_list_node(){
 	path=$(__cm_command_path $@)
-	__cm_is_command_tag $@
-	[ "$?" == "0" ] && return
+	#if __cm_is_command_tag ; then
+#		return
+	#fi
+
 	for node in $path/*; do
 		node=$(basename $node)
 		[ "${node:0:1}" != "_" ] && echo $node

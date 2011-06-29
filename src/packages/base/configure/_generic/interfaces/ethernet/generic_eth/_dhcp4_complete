@@ -1,8 +1,0 @@
-#!/bin/sh
-
-if [ $__cm_no_command ]; then
-	exit
-else
-	exit
-fi
-

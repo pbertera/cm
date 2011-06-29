@@ -39,9 +39,14 @@ Le funzioni in questa sezioni sono ad utilità generica
 .. function:: __cm_exit_error([text],[...])
    
    Stampa la stringa passata in stderr ed esce
+   Se è impostata la varialbel __cm_debug stampa lo stack di chiamata delle funzioni
 
    :param text: la stringa da stampare
    :type text: String
+
+.. function:: __cm_set_globvars()
+
+  imposta le variabili `command` `command_path` `param` `command_path_dir` `command_name` `command_node_priority` `command_priority`
 
 =======================
 Commands Management API
@@ -74,9 +79,22 @@ Le funzioni in questa sezione servono ad estrapolare le varie parti dei comandi 
    
    Stampa il path dello script che implementa il comando ``command``
 
-   :param command: il comando senza parametri
+   :param command: il comando di cui si vuole conoscere il path del performer. 
+    Deve essere il coamndo senza parametri
    :type command: String
 
+.. function:: __cm_check_nodes_syntax(command)
+
+   Naviga il comando `command` e per ogni nodo tag esegue lo script di sintassi
+
+   :param command: il comando da verificare
+   :type command: String
+.. function:: __cm_exec_tag_nodes(command)
+
+   Naviga il comando `command` e per ogni nodo tag esegue lo script di sintassi
+
+   :param command: il comando da verificare
+   :type command: String
 .. function:: __cm_command_path_dir(command)
    
    Stampa il nome della directory che contiene lo script che implementa il comando ``command``
@@ -84,15 +102,23 @@ Le funzioni in questa sezione servono ad estrapolare le varie parti dei comandi 
    :param command: il comando senza parametri
    :type command: String
 
-.. function:: __cm_is_command(command)
+.. function:: __cm_is_command_leaf(command)
    
-   ritorna 0 se il comando ``command`` è un comando, altrimenti 1
+   ritorna 0 se il comando ``command`` è una foglia, altrimenti 1
 
    :param command: il comando senza parametri
    :type command: String
    :rtype: Integer
 
-.. function:: __cm_is_branch(command)
+.. function:: __cm_is_command_tag(command)
+   
+   ritorna 0 se il comando ``command`` è un nodo tag, altrimenti 1
+
+   :param command: il comando senza parametri
+   :type command: String
+   :rtype: Integer
+
+.. function:: __cm_is_command_node(command)
    
    ritorna 0 se il comando ``command`` è un ramo, altrimenti 1
 
@@ -100,16 +126,24 @@ Le funzioni in questa sezione servono ad estrapolare le varie parti dei comandi 
    :type command: String
    :rtype: Integer
 
-.. function:: __cm_get_command_branch_priority(command_branch)
+.. function __cm_analyze_command(command)
+
+   stampa `type` e `performer` per il comando passato.
+   `type` puo' essere **tag**, **node** o **leaf** a seconda del tipo di comando
+
+   :param command: il comando da analizzare
+   :type command: string
+   :rtype: String
+.. function:: __cm_get_command_node_priority(command_node)
    
-   stampa la priorità del command branch. Se non trova il file di priorità
+   stampa la priorità del command node. Se non trova il file di priorità
    stampa la priorità definita dalla variabile ``_cm_default_priority``
 
-   :param command_branch: il comando senza parametri
-   :type command_branch: String
+   :param command_node: il comando senza parametri
+   :type command_node: String
    :rtype: Integer
 
-.. function:: __cm_get_command_branch_priority(command)
+.. function:: __cm_get_command_priority(command)
    
    stampa la priorità del comado. Se non trova il file di priorità
    stampa la priorità definita dalla variabile ``_cm_default_priority``
@@ -124,12 +158,12 @@ Le funzioni in questa sezione servono ad estrapolare le varie parti dei comandi 
 Configuration Management Database API
 =====================================
 
-.. function:: __cm_db_create_branch(branch)
+.. function:: __cm_db_create_node(node)
    
-   Crea un branch all'interno del CMDB
+   Crea un nodo all'interno del CMDB
 
-   :param branch: il branch da creare
-   :type command: String
+   :param node: il branch da creare
+   :type node: String
 
 .. function:: __cm_db_set_leaf(value, leaf_path)
    
@@ -165,51 +199,52 @@ Configuration Management Database API
 
    :param leaf_path: il path della foglia
 
-.. function:: __cm_db_list_branches_sorted_priority(branch_path)
+.. function:: __cm_db_list_nodes_sorted_priority(node_path)
    
-   Elenca i branch figli di `branch_path` ordinati per priorità all'interno del CMDB.
+   Elenca i nodi figli di `node_path` ordinati per priorità all'interno del CMDB.
    Viene stampata anche la priorità
 
-   :param branch_path: il path del branch
+   :param node_path: il path del node
 
-.. function:: __cm_db_list_branches_sorted(branch_path)
+.. function:: __cm_db_list_nodes_sorted(node)
    
-   Elenca i branch figli di `branch_path` ordinati per priorità all'interno del CMDB.
+   Elenca i nodi figli di `node` ordinati per priorità all'interno del CMDB.
 
-   :param branch_path: il path del branch
+   :param node: il path del nodo
 
-.. function:: __cm_db_branch_to_path(branch_path)
+.. function:: __cm_db_node_to_path(node)
    
-   Stampa il path del filesystem associato a `branch_path`.
+   Stampa il path del filesystem associato a `node`.
 
-   :param branch_path: il path del branch
+   :param node: il path del node
 
-.. function:: __cm_db_list_leaf_sorted(branch_path)
+.. function:: __cm_db_list_leaf_sorted_priority(node)
    
-   Elenca le foglie figlie di `branch_path` ordinate per priorità all'interno del CMDB.
+   Elenca le foglie figlie di `node` ordinate per priorità all'interno del CMDB.
    Viene stampata anche la priorità
 
-   :param branch_path: il path del branch
+   :param node: il path del node
 
-.. function:: __cm_db_list_leaf_sorted(branch_path)
+.. function:: __cm_db_list_leaf_sorted(node)
    
-   Elenca le foglie figlie di `branch_path` ordinate per priorità all'interno del CMDB.
+   Elenca le foglie figlie di `node_path` ordinate per priorità all'interno del CMDB.
 
-   :param branch_path: il path del branch
+   :param node: il path del node
 
-.. function:: __cm_db_is_leaf(leaf_path)
+.. function:: __cm_db_is_leaf(leaf)
    
-   ritorna 0 se la foglia ``leaf_path`` è una foglia, altrimenti 1
+   ritorna 0 se la foglia ``leaf`` è una foglia, altrimenti 1
 
-   :param leaf_path: la voglia da verificare
-   :type leaf_path: String
+   :param leaf: la voglia da verificare
+   :type leaf: String
    :rtype: Integer
 
-.. function:: __cm_db_show_tree([branch_path])
+.. function:: __cm_db_show_tree([node])
    
-   Stampa un albero del CMDB partendo da `branch_path` ordinato per priorità.
+   Stampa un albero del CMDB partendo da `node` ordinato per priorità.
+   `node` è facoltativo
 
-   :param branch_path: il path del branch
+   :param node: il path del branch
 
 .. function:: __cm_db_remove_leaf(leaf_path)
    
@@ -217,16 +252,16 @@ Configuration Management Database API
 
    :param leaf_path: il path della foglia
 
-.. function:: __cm_db_remove_branch(branch_path)
+.. function:: __cm_db_remove_branch(node)
    
-   Rimuove il branch `branch_path` dal CMDB.
+   Rimuove il node `node` dal CMDB.
 
-   :param branch_path: il path del branch
+   :param branch_path: il nodo da rimuovere
 
-.. function:: __cm_show_conf[branch_path])
+.. function:: __cm_show_conf[node])
    
-   Stampa un albero del CMDB partendo da `branch_path` ordinato per priorità.
+   Stampa un albero del CMDB partendo da `node` ordinato per priorità.
    A differenza di `__cm_db_show_tree` antepone il nome del comando prendendolo dalla variabile `__cm_bin`
 
-   :param branch_path: il path del branch
+   :param branch_path: il nodo do partenza
 

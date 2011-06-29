@@ -1,11 +1,11 @@
 #!/bin/bash
-#@=============
-#@cm system end
-#@=============
+#@======
+#@cm end
+#@======
 #@
 #@|syntax| 
 #@
-#@|normal-command| cm system end
+#@|normal-command| cm end
 #@
 #@|negate-command| *none*
 #@

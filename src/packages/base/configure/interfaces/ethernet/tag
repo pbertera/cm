@@ -10,10 +10,8 @@ command_name=$(__cm_command_name $@)
 
 
 if [ $__cm_no_command ]; then
-	set -e
-	__cm_db_list_nodes_sorted interfaces ethernet $3 >/dev/null
-	__cm_db_remove_branch interfaces ethernet $3	
+	#FIXME !!
+	continue
 else
-	
-	__cm_db_create_branch interfaces ethernet $3
+	__cm_db_create_node interfaces ethernet $3
 fi

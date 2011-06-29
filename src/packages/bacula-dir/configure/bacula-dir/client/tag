@@ -1,0 +1,16 @@
+#!/bin/sh
+# set ip in configuration database for device
+# @param $1: bacula-dir: 	statical part of command
+# @param $2: client: 		statical part of command
+# @param $3: add: 		statical part of command
+# @param $4: name:		name of client to add
+
+. ${__cm_lib_dir}/cmlib
+
+if [ $__cm_no_command ]; then
+	
+	echo FIXME
+else
+	echo "RUNNING TAG"
+	echo $@
+fi

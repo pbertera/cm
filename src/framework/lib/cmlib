@@ -81,6 +81,32 @@ __cm_exit_error()
 	exit 1
 }
 
+#@.. function:: __cm_set_globvars(node)
+#@
+#@  imposta le variabili `command` `command_path` `param` `command_path_dir` `command_name` `command_node_priority` `command_priority`
+#@  in base al command node `node`
+#@
+#@  * `command`: è il command node senza alcun parametro
+#@  * `command_path`: è il path del performer
+#@  * `command_path_dir` è la directory contente l'implementazione del comando
+#@  * `command_name`: è il nome del comando
+#@  * `command_node_priority`: è la priority del nodo contenete il comando
+#@  * `command_priority`: è la priorità del comando
+#@
+#@  :param node: il command node
+#@
+__cm_set_globvars()
+{
+	command=$(__cm_command $@)
+	command_path=$(__cm_command_path $@)
+	param=$(__cm_command_param $@)
+	command_path_dir=$(__cm_command_path_dir $@)
+	command_name=$(__cm_command_name $@)
+	
+	command_node_priority=$(__cm_get_command_node_priority $@)
+	command_priority=$(__cm_get_command_priority $@)
+}
+
 #@=======================
 #@Commands Management API
 #@=======================
@@ -215,7 +241,11 @@ __cm_exec_tag_nodes()
 __cm_command_path_dir()
 {
 	local command_path=$(__cm_command_path $@)
-	echo $(dirname "$command_path")
+	if [ -d "$command_path" ]; then
+		echo $command_path
+	elif [ -f "$command_path" ]; then
+		echo $(dirname "$command_path")
+	fi
 }
 
 __cm_is_command()
@@ -372,16 +402,16 @@ __cm_list_node(){
 	done
 }
 
-#@.. function:: __cm_get_command_branch_priority(command_branch)
+#@.. function:: __cm_get_command_node_priority(command_node)
 #@   
-#@   stampa la priorità del command branch. Se non trova il file di priorità
+#@   stampa la priorità del command node. Se non trova il file di priorità
 #@   stampa la priorità definita dalla variabile ``_cm_default_priority``
 #@
-#@   :param command_branch: il comando senza parametri
-#@   :type command_branch: String
+#@   :param command_node: il comando senza parametri
+#@   :type command_node: String
 #@   :rtype: Integer
 #@
-__cm_get_command_branch_priority()
+__cm_get_command_node_priority()
 {
 	local branch=$@
 	#local command_dir="$__cm_libexec_dir"/"${@// //}"
@@ -390,11 +420,11 @@ __cm_get_command_branch_priority()
 		cat "$command_dir"/_priority
 	else
 		echo $__cm_default_priority
-		__cm_debug "Priority not found. Priority file: $command_dir/_priority"
+		__cm_debug "Priority not found($@). Priority file: $command_dir/_priority"
 	fi
 }
 
-#@.. function:: __cm_get_command_branch_priority(command)
+#@.. function:: __cm_get_command_priority(command)
 #@   
 #@   stampa la priorità del comado. Se non trova il file di priorità
 #@   stampa la priorità definita dalla variabile ``_cm_default_priority``
@@ -426,14 +456,14 @@ __cm_get_command_priority()
 #@=====================================
 #@
 
-#@.. function:: __cm_db_create_branch(branch)
+#@.. function:: __cm_db_create_node(node)
 #@   
-#@   Crea un branch all'interno del CMDB
+#@   Crea un nodo all'interno del CMDB
 #@
-#@   :param branch: il branch da creare
-#@   :type command: String
+#@   :param node: il branch da creare
+#@   :type node: String
 #@
-__cm_db_create_branch()
+__cm_db_create_node()
 {
 	branch=$@
 	__cm_is_command $branch
@@ -466,7 +496,7 @@ __cm_db_set_leaf()
 	local path_in_db="$(__cm_db_node_to_path $branch)"
 	__cm_is_command_leaf $branch $leaf
 	if [ $? == 0 ]; then
-		[ -d "$path_in_db" ] || __cm_db_create_branch $branch
+		[ -d "$path_in_db" ] || __cm_db_create_node $branch
 		__cm_debug "Setting leaf $path_in_db/$leaf in database"
 		echo "$value" > "$path_in_db"/"$leaf"
 	else
@@ -495,7 +525,7 @@ __cm_db_append_leaf()
 	local path_in_db="$(__cm_db_node_to_path $branch)"
 	__cm_is_command_leaf $branch $leaf
 	if [ $? == 0 ]; then
-		[ -d "$path_in_db" ] || __cm_db_create_branch $branch
+		[ -d "$path_in_db" ] || __cm_db_create_node $branch
 		__cm_debug "Appending to leaf $path_in_db/$leaf in database"
 		echo "$value" >> "$path_in_db"/"$leaf"
 	else
@@ -519,8 +549,7 @@ __cm_db_get_leaf()
 	local branch="$@"
 	#local leaf_path_in_db="$__cm_db_dir"/"${leaf_path// //}"
 	local path=$(__cm_db_node_to_path $branch)
-	__cm_db_is_leaf "$branch"
-	if [ $? == 0 ];then 
+	if __cm_db_is_leaf "$branch" ;then 
 		cat "$path"
 	else
 		__cm_exit_error "the configuration leaf \"$branch\" not exist in db"
@@ -543,7 +572,7 @@ __cm_db_list_nodes_sorted_priority()
 			[ -d "$b" ] || continue
 			branch=$(basename $b)
 			command=$(eval echo $@ $branch)			
-			priority=$(__cm_get_command_branch_priority $command)
+			priority=$(__cm_get_command_node_priority $command)
 			ret="$priority:${@} $branch"
 			echo ${ret/: /:}
 		done | sort -n -k1 -t:
@@ -552,22 +581,22 @@ __cm_db_list_nodes_sorted_priority()
 	fi
 } 
 
-#@.. function:: __cm_db_list_nodes_sorted(node_path)
+#@.. function:: __cm_db_list_nodes_sorted(node)
 #@   
-#@   Elenca i nodi figli di `node_path` ordinati per priorità all'interno del CMDB.
+#@   Elenca i nodi figli di `node` ordinati per priorità all'interno del CMDB.
 #@
-#@   :param node_path: il path del nodo
+#@   :param node: il path del nodo
 #@
 __cm_db_list_nodes_sorted()
 { 
 	__cm_db_list_nodes_sorted_priority $@ | cut -d: -f2
 }
 
-#@.. function:: __cm_db_node_to_path(node_path)
+#@.. function:: __cm_db_node_to_path(node)
 #@   
-#@   Stampa il path del filesystem associato a `node_path`.
+#@   Stampa il path del filesystem associato a `node`.
 #@
-#@   :param node_path: il path del node
+#@   :param node: il path del node
 #@
 __cm_db_node_to_path()
 {
@@ -577,33 +606,32 @@ __cm_db_node_to_path()
 	echo $branch_path
 }
 
-#@.. function:: __cm_db_list_leaf_sorted(node_path)
+#@.. function:: __cm_db_list_leaf_sorted_priority(node)
 #@   
-#@   Elenca le foglie figlie di `node_path` ordinate per priorità all'interno del CMDB.
+#@   Elenca le foglie figlie di `node` ordinate per priorità all'interno del CMDB.
 #@   Viene stampata anche la priorità
 #@
-#@   :param branch_path: il path del node
+#@   :param node: il path del node
 #@
 __cm_db_list_leaf_sorted_priority()
 {
 	local branch=$(eval echo $@)
 	local path=$(__cm_db_node_to_path $branch)
-	for leaf_name in $( ls -1 $path); do
-		__cm_db_is_leaf $branch $leaf_name
-		if [ $? == 0 ]; then
+	for leaf_name in $(ls -1 $path); do
+		if __cm_db_is_leaf $branch $leaf_name; then
 			local command=$(eval echo $branch $leaf_name)
 			local priority=$(__cm_get_command_priority $command)
-			echo "${priority}:$leaf_name"
-			__cm_debug "$leaf_name is a leaf, priority is: $priority"
+			echo "${priority}:$command"
+			__cm_debug "$command is a leaf, priority is: $priority"
 		fi
 	done | sort -n -k1 -t:
 }
 
-#@.. function:: __cm_db_list_leaf_sorted(node_path)
+#@.. function:: __cm_db_list_leaf_sorted(node)
 #@   
 #@   Elenca le foglie figlie di `node_path` ordinate per priorità all'interno del CMDB.
 #@
-#@   :param branch_path: il path del node
+#@   :param node: il path del node
 #@
 __cm_db_list_leaf_sorted()
 {
@@ -611,61 +639,46 @@ __cm_db_list_leaf_sorted()
 }
 
 
-#@.. function:: __cm_db_is_leaf(leaf_path)
+#@.. function:: __cm_db_is_leaf(leaf)
 #@   
-#@   ritorna 0 se la foglia ``leaf_path`` è una foglia, altrimenti 1
+#@   ritorna 0 se la foglia ``leaf`` è una foglia, altrimenti 1
 #@
-#@   :param leaf_path: la voglia da verificare
-#@   :type leaf_path: String
+#@   :param leaf: la voglia da verificare
+#@   :type leaf: String
 #@   :rtype: Integer
 #@
 __cm_db_is_leaf()
 {
-	# FIXME!!
 	local branch=$(eval echo $@)
 	local path=$(__cm_db_node_to_path $branch)
 	local filename=$(basename $path)
-	__cm_debug "Leaf path: $path"
 	[ "${filename:0:1}" == "_" ] && return 1
 	[ -f "$path" ] && return 0 
-	__cm_debug "NOt a leaf"
 	return 1 
 }
 
-#@.. function:: __cm_db_show_tree([branch_path])
+#@.. function:: __cm_db_show_tree([node])
 #@   
-#@   Stampa un albero del CMDB partendo da `branch_path` ordinato per priorità.
+#@   Stampa un albero del CMDB partendo da `node` ordinato per priorità.
+#@   `node` è facoltativo
 #@
-#@   :param branch_path: il path del branch
+#@   :param node: il path del branch
 #@
 __cm_db_show_tree()
 {
-	local tree=
-	if [ -n "$@" ]; then
-		tree=$(eval echo $@)
-	fi 
+	tree=$(eval echo $@)
 	local OIFS=$IFS
 	local IFS=$'\n'
-	for branch in $(__cm_db_list_nodes_sorted $tree); do
-		__cm_debug "Branch $branch"
-		for leaf_name in $(__cm_db_list_leaf_sorted $branch); do
-			__cm_debug "LEAF $leaf_name"
-			if __cm_db_is_leaf $branch $leaf_name; then
-				__cm_debug "\"$branch $leaf_name\" is not a leaf" 
-				command=$(eval echo $branch $leaf_name)
-				val=$(__cm_db_get_leaf $command)
-				for v in $val; do
-					__cm_debug "Leaf: $branch ${leaf_name}, value: $v"
-					echo "$branch $leaf_name $v"
-				done
-				[ -z "${val}" ] && echo "$branch $leaf_name"
-			else
-				continue
-			fi
+	for leaf in $(__cm_db_list_leaf_sorted $tree); do
+		local val=$(__cm_db_get_leaf $leaf)
+		for v in $val; do
+			echo "$leaf $v"
 		done
-		__cm_db_show_tree $branch
+		[ -z "${val}" ] && echo "$leaf"
 	done
-	IFS=$OIFS
+	for node in $(__cm_db_list_nodes_sorted $tree); do
+		__cm_db_show_tree $node
+	done
 }
 	
 # remove leaf from db: the arguments represent the path of leaf
@@ -687,14 +700,13 @@ __cm_db_remove_leaf()
 
 }
 
-# remove branch from db: the arguments represent the path of branch
-#@.. function:: __cm_db_remove_branch(branch_path)
+#@.. function:: __cm_db_remove_branch(node)
 #@   
-#@   Rimuove il branch `branch_path` dal CMDB.
+#@   Rimuove il node `node` dal CMDB.
 #@
-#@   :param branch_path: il path del branch
+#@   :param branch_path: il nodo da rimuovere
 #@
-__cm_db_remove_branch()
+__cm_db_remove_node()
 {
 	local branch_path=$@
 	local branch_path_in_db="$__cm_db_dir"/"${branch_path// //}"
@@ -706,12 +718,12 @@ __cm_db_remove_branch()
 
 }
 
-#@.. function:: __cm_show_conf[branch_path])
+#@.. function:: __cm_show_conf[node])
 #@   
-#@   Stampa un albero del CMDB partendo da `branch_path` ordinato per priorità.
+#@   Stampa un albero del CMDB partendo da `node` ordinato per priorità.
 #@   A differenza di `__cm_db_show_tree` antepone il nome del comando prendendolo dalla variabile `__cm_bin`
 #@
-#@   :param branch_path: il path del branch
+#@   :param branch_path: il nodo do partenza
 #@
 __cm_show_conf()
 {

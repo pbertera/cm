@@ -94,6 +94,13 @@ DB Port                   |TODO|
 
 **Schedule Resource**
 
+========================= ====================
+Directive                 Implementation state
+========================= ====================
+Name                       |TODO|
+Run                        |TODO|
+========================= ====================
+
 **FileSet Resource**
 
 =====================
@@ -307,6 +314,72 @@ Questo comando aggiunge i comandi per configurare un nuovo client
 Una volta aggiunto il client sarà possibile configurarlo tramite i comandi
 
  *cm bacula-dir client <client-id> \**
+
+===========================================================
+cm bacula-dir schedule <schedule-id> run <run-id> monthspec
+===========================================================
+
+|syntax| 
+
+|normal-command| cm bacula-dir schedule <schedule-id> run <run-id> monthspec <monthspec>
+
+|negate-command| nocm bacula-dir schedule <schedule-id> run <run-id> monthspec
+
+|configuration-mode|
+
+|parameters| 
+
+* `momnthspec`: The specification for monthly scheduling
+
+|default| *jan-dec*
+
+|usage|
+
+Questo comando imposta la spcifica per lo scheduling mensile
+
+=========================================================
+cm bacula-dir schedule <schedule-id> run <run-id> dayspec
+=========================================================
+
+|syntax| 
+
+|normal-command| cm bacula-dir schedule <schedule-id> run <run-id> dayspec <dayspec>
+
+|negate-command| nocm bacula-dir schedule <schedule-id> run <run-id> dayspec
+
+|configuration-mode|
+
+|parameters| 
+
+* `dayspec`: The specification for monthly scheduling
+
+|default| *daily*
+
+|usage|
+
+Questo comando imposta la specifica per lo scheduling giornalier
+
+==========================================================
+cm bacula-dir schedule <schedule-id> run <run-id> timespec
+==========================================================
+
+|syntax| 
+
+|normal-command| cm bacula-dir schedule <schedule-id> run <run-id> timespec <timespec>
+
+|negate-command| nocm bacula-dir schedule <schedule-id> run <run-id> timespec
+
+|configuration-mode|
+
+|parameters| 
+
+* `timespec`: The specification for hourli specification
+
+|default| *daily*
+
+|usage|
+
+Questo comando imposta la specifica per lo scheduling orario
 
 ======================
 cm bacula-dir password

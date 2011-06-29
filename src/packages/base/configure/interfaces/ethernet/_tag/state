@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# set state in configuration database for device
+# @param $1: interfaces:        statical part of command
+# @param $2: ethernet:          statical part of command
+# @param $3: ethX:              ethernet device to configure
+# @param $4: state:             statical part of command
+# @param $5: state value:       active or inactive
+
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+if [ $__cm_no_command ]; then
+        __cm_db_remove_leaf interfaces ethernet $3 state
+else
+        __cm_db_set_leaf "$param" interfaces ethernet $3 state
+fi
+

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ $__cm_no_command ]; then
+	exit
+else
+	echo "xxx.xxx.xxx.xxx/yy - IP address and Netmask"
+fi
+

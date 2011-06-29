@@ -1,0 +1,21 @@
+#!/bin/sh
+# configure interface for dhcp
+# @param $1: interfaces: 	statical part of command
+# @param $2: ethernet: 		statical part of command
+# @param $3: ethX: 		ethernet device to configure
+# @param $4: dhcp4:		statical part of command
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+
+if [ $__cm_no_command ]; then
+	__cm_db_remove_leaf interfaces ethernet $3 dhcp4
+else
+	__cm_db_set_leaf " " interfaces ethernet $3 dhcp4
+fi

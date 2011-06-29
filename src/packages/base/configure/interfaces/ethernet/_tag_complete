@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#. ${__cm_lib_dir}/cmcheck
+
+if [ $__cm_no_command ]; then
+	exit
+else
+	_cm_list_iface	
+fi
+

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+. ${__cm_lib_dir}/cmlib
+
+command=$(__cm_command $@)
+command_path=$(__cm_command_path $@)
+param=$(__cm_command_param $@)
+command_path_dir=$(__cm_command_path_dir $@)
+command_name=$(__cm_command_name $@)
+
+
+if [ $__cm_no_command ]; then
+	set -e
+	__cm_db_list_nodes_sorted interfaces ethernet $3 >/dev/null
+	__cm_db_remove_branch interfaces ethernet $3	
+else
+	
+	__cm_db_create_branch interfaces ethernet $3
+fi

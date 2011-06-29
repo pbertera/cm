@@ -15,11 +15,11 @@ command_priority=$(__cm_get_command_priority $@)
 schedule_id=$3
 run_id=$5
 
-
 if [ $__cm_no_command ]; then
         exit
 else
 	[ "$param" == "hourly" ] && exit 0
-	seq 0 23 | grep "^${param:0:2}\$" > /dev/null 2>&1
-	seq 0 59 | grep "^${param:3:4}\$" > /dev/null 2>&1
+	set -e
+	seq 0 23 | grep "^${param:0:2}\$" > /dev/null
+	seq 0 59 | grep "^${param:3:4}\$" > /dev/null	
 fi

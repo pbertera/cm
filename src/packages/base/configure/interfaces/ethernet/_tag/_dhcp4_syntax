@@ -1,0 +1,14 @@
+#!/bin/sh
+# check syntax for interfaces ethernet ethX ip xxx.xxx.xxx.xxx
+# @param $1: interfaces:        statical part of command
+# @param $2: ethernet:          statical part of command
+# @param $3: ethX:              ethernet device to configure
+# @param $4: dhcp4:           statical part of command
+
+. ${__cm_lib_dir}/cmcheck
+. ${__cm_lib_dir}/cmlib
+
+ip4_addr=$(__cm_db_get_leaf interfaces ethernet $3 address4 2>/dev/null )
+[ -z "$ip4_addr" ] && exit 0
+__cm_exit_error "Static address configured for $3, remove first \"interfaces ethernet $3 address4\""
+

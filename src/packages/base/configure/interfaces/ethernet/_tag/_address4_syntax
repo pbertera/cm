@@ -1,0 +1,43 @@
+#!/bin/sh
+# check syntax for interfaces ethernet ethX ip xxx.xxx.xxx.xxx
+# @param $1: interfaces:        statical part of command
+# @param $2: ethernet:          statical part of command
+# @param $3: ethX:              ethernet device to configure
+# @param $4: address4:           statical part of command
+# @param $5: address/mask value:          the ip address in CIDR form
+
+. ${__cm_lib_dir}/cmcheck
+. ${__cm_lib_dir}/cmlib
+
+if [ $__cm_no_command ]; then
+	exit
+else
+	
+	# check if is configured in dhcp mode
+	is_dhcp=$(__cm_db_get_leaf interfaces ethernet $3 dhcp4 2>/dev/null )
+	[ -n "$is_dhcp" ] && __cm_exit_error "Interface $3 is configured for dhcp4 protocol, remove first \"interfaces ethernet $3 dhcp4\""
+
+	ip=$(echo $5 | cut -d "/" -f1)
+	mask=$(echo $5 | cut -d "/" -f2)
+	
+	#check if address is valid
+	is_valid_ip "$ip"
+	[ "$?" != "0" ] && __cm_exit_error "Invalid IPv4 address"
+	
+	# mask must be exist
+	[ "${mask}" == "$ip" ] && __cm_exit_error "Netmask is required"
+	
+	# if len of netmask > 2 is dotted format
+	if [ ${#mask} -gt 2 ]; then
+		#check if netmask is valid
+		is_valid_ip "$mask"
+		[ "$?" != "0" ] && __cm_exit_error "Invalid IPv4 netmask"
+		exit 0
+	fi
+	
+	# CIDR format
+	[ $mask -gt 32 ] && __cm_exit_error "Invalid IPv4 CIDR netmask"
+	[ $mask -lt 0 ] && __cm_exit_error "Invalid IPv4 CIDR netmask"
+	exit 0	
+fi
+

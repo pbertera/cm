@@ -63,13 +63,21 @@ __cm_debug()
 #@.. function:: __cm_exit_error([text],[...])
 #@   
 #@   Stampa la stringa passata in stderr ed esce
+#@   Se è impostata la varialbel __cm_debug stampa lo stack di chiamata delle funzioni
 #@
 #@   :param text: la stringa da stampare
 #@   :type text: String
 #@
 __cm_exit_error()
-{
-	echo "Error: $@"  1>&2 
+
+{	
+	echo "Error in ${FUNCNAME[1]}:${BASH_LINENO[0]}: $*" 1>&2
+	local i=0
+	[ $__cm_debug ] && while [ $i -lt ${#FUNCNAME} ]; do
+		[ "${FUNCNAME[$i]}" == "main" ] && break
+		echo "${BASH_SOURCE[$i]}::${FUNCNAME[$i + 1]}::${BASH_LINENO[$i]}" 1>&2
+		i=$(expr $i + 1)
+	done
 	exit 1
 }
 
@@ -105,7 +113,7 @@ __cm_command_param()
 #@
 __cm_command_name()
 {
-	local command_path=$(__cm_command_path $@)
+	local command_path=$(__cm_command_path $(eval echo $@))
 	echo $(basename "$command_path")
 }
 
@@ -118,8 +126,8 @@ __cm_command_name()
 #@
 __cm_command()
 {
-	OIFS=$IFS
-	IFS=$'\n'
+	local OIFS=$IFS
+	local IFS=$'\n'
 	for line in $(__cm_analyze_command $@); do
 		case $line in
 			command:*) echo ${line/*:/}
@@ -138,8 +146,8 @@ __cm_command()
 #@
 __cm_command_path()
 {
-	OIFS=$IFS
-	IFS=$'\n'
+	local OIFS=$IFS
+	local IFS=$'\n'
 	for line in $(__cm_analyze_command $@); do
 		case $line in
 			path:*) echo ${line/*:/}
@@ -147,6 +155,55 @@ __cm_command_path()
 	done
 	IFS=$OIFS
 }
+
+#@.. function:: __cm_check_nodes_syntax(command)
+#@
+#@   Naviga il comando `command` e per ogni nodo tag esegue lo script di sintassi
+#@
+#@   :param command: il comando da verificare
+#@   :type command: String
+__cm_check_nodes_syntax()
+{
+	local node command dir all
+	all=$@
+	command=
+	while (($#)); do
+		command="$command $1"
+		if __cm_is_command_tag $command; then
+			dir=$(__cm_command_path $command)
+			__cm_debug "Checking syntax for tagged node: $dir"
+			$dir/_tag_syntax $all || __cm_exit_error "Invalid syntax for $command"
+			command="$command $2"
+			shift
+		fi
+		shift
+	done
+}
+
+#@.. function:: __cm_exec_tag_nodes(command)
+#@
+#@   Naviga il comando `command` e per ogni nodo tag esegue lo script di sintassi
+#@
+#@   :param command: il comando da verificare
+#@   :type command: String
+__cm_exec_tag_nodes()
+{
+	local node command dir all
+	all=$@
+	command=
+	while (($#)); do
+		command="$command $1"
+		if __cm_is_command_tag $command; then
+			dir=$(__cm_command_path $command)
+			__cm_debug "Executing node: $dir"
+			$dir/tag $all || __cm_exit_error "Invalid syntax for $command"
+			command="$command $2"
+			shift
+		fi
+		shift
+	done
+}
+
 
 #@.. function:: __cm_command_path_dir(command)
 #@   
@@ -161,6 +218,14 @@ __cm_command_path_dir()
 	echo $(dirname "$command_path")
 }
 
+__cm_is_command()
+{
+	__cm_is_command_leaf $@ && return 0
+	__cm_is_command_node $@ && return 0
+	__cm_is_command_tag $@ && return 0
+	return 1
+}
+
 #@.. function:: __cm_is_command_leaf(command)
 #@   
 #@   ritorna 0 se il comando ``command`` è una foglia, altrimenti 1
@@ -171,8 +236,8 @@ __cm_command_path_dir()
 #@
 __cm_is_command_leaf()
 {
-        OIFS=$IFS
-        IFS=$'\n'
+        local OIFS=$IFS
+        local IFS=$'\n'
 	# use eval for remove quoting
         for line in $(__cm_analyze_command $@ 2>/dev/null); do
                 case $line in
@@ -196,8 +261,8 @@ __cm_is_command_leaf()
 #@
 __cm_is_command_tag()
 {
-        OIFS=$IFS
-        IFS=$'\n'
+        local OIFS=$IFS
+        local IFS=$'\n'
         for line in $(__cm_analyze_command $@ 2>/dev/null); do
                 case $line in
                         type:*) if [ "${line/*:/}" == "tag" ]; then 
@@ -221,8 +286,8 @@ __cm_is_command_tag()
 #@
 __cm_is_command_node()
 {
-        OIFS=$IFS
-        IFS=$'\n'
+        local OIFS=$IFS
+        local IFS=$'\n'
         for line in $(__cm_analyze_command $@ 2>/dev/null); do
                 case $line in
                         type:*) if [ "${line/*:/}" == "node" ]; then 
@@ -245,29 +310,30 @@ __cm_is_command_node()
 #@   :rtype: String
 __cm_analyze_command()
 {
-	local cur path command performer 
+	local cur path command param i
 	path="${__cm_libexec_dir}"
 	command=
 	node_type=
 	performer=
-	OIFS=$IFS
-	while (( "$#" )); do
-		cur=${1// //}
-		command="$command $cur"
-		#path="$path/${cur/ /}"
+	local OIFS=$IFS
+	local IFS=$' '
+	param=($(echo $@))
+	i=0
+	while [ $i -lt ${#param[@]} ]; do
+		#cur=${1// //}
+		cur=${param[$i]}
 		path="$path/${cur}"
-		path=${path/ /}
+		#path=${path/ /}
+		command="$command $cur"
 		if [ -d "$path/_tag" ]; then
 			node_type=tag
-			#performer="$path/tag_performer"
-			completion_helper="$path/_tag_complete"
-			syntax_checker="$path/_tag_syntax"
-			help_script="$path/_tag_help"
-			if [ $# -ge 2 ]; then
-				command="$command $2"
+			if [ $(expr ${#param[@]} - $i) -ge 2 ]; then
 				path="$path/_tag"
 			fi
-			shift
+			if [ $(expr ${#param[@]} - $i) -ge 1 ]; then
+				command="$command ${param[$i + 1]}"
+			fi
+			i=$(expr $i + 1)
 
 		elif [ -d "$path" ]; then
 			node_type=node
@@ -279,20 +345,18 @@ __cm_analyze_command()
 		elif [ -f "$path" ]; then
 			node_type=leaf
 			performer="$path"	
-			completion_helper="$path/$cur"
-			syntax_checker="$path/_$cur_syntax"
-			syntax_checker="$path/_$cur_help"
 			break
-
 		else
-			__cm_exit_error "Command not found: ${command/ /}"
+			IFS=$OIFS
+			__cm_exit_error "Command not found: \"${command/ /}\" $path"
 		fi
-		shift
+		i=$(expr $i + 1)
 	done
 	echo command:${command/ /}
 	echo type:$node_type
 	echo performer:$performer
 	echo path:$path
+	IFS=$OIFS
 }
 
 __cm_list_node(){
@@ -320,7 +384,8 @@ __cm_list_node(){
 __cm_get_command_branch_priority()
 {
 	local branch=$@
-	local command_dir="$__cm_libexec_dir"/"${@// //}"
+	#local command_dir="$__cm_libexec_dir"/"${@// //}"
+	local command_dir="$(__cm_command_path_dir $@)"
 	if [ -f "${command_dir}/_priority" ]; then
 		cat "$command_dir"/_priority
 	else
@@ -340,9 +405,9 @@ __cm_get_command_branch_priority()
 #@
 __cm_get_command_priority()
 {
-	local branch=$@
-	command_dir=$(__cm_command_path_dir $@)
-	command_name=$(__cm_command_name $@)
+	local branch=$(eval echo $@)
+	local command_dir=$(__cm_command_path_dir $branch)
+	local command_name=$(__cm_command_name $branch)
 	
 	if [ -f "${command_dir}/_${command_name}_priority" ]; then
 		cat "${command_dir}/_${command_name}_priority"
@@ -371,13 +436,13 @@ __cm_get_command_priority()
 __cm_db_create_branch()
 {
 	branch=$@
-	__cm_is_command_node $branch
+	__cm_is_command $branch
 	if [ $? == 0 ]; then
 		local path_in_db="$(__cm_db_node_to_path $branch)"
 		__cm_debug "Creating branch $path_in_db in database"
 		mkdir -p $path_in_db
 	else
-		__cm_exit_error "Creare branch in db: Command branch not exist: $@"
+		__cm_exit_error "Create branch in db: Command branch not exist: $@"
 	fi
 }
 
@@ -477,7 +542,8 @@ __cm_db_list_nodes_sorted_priority()
 		for b in $start_path/*; do
 			[ -d "$b" ] || continue
 			branch=$(basename $b)
-			priority=$(__cm_get_command_branch_priority "$@ $branch")
+			command=$(eval echo $@ $branch)			
+			priority=$(__cm_get_command_branch_priority $command)
 			ret="$priority:${@} $branch"
 			echo ${ret/: /:}
 		done | sort -n -k1 -t:
@@ -505,7 +571,7 @@ __cm_db_list_nodes_sorted()
 #@
 __cm_db_node_to_path()
 {
-	local branch=$@
+	local branch=$(eval echo $@)
 	local start_path="$__cm_db_dir"
 	local branch_path=${start_path}/${branch// //}
 	echo $branch_path
@@ -520,12 +586,13 @@ __cm_db_node_to_path()
 #@
 __cm_db_list_leaf_sorted_priority()
 {
-	local branch=$@
+	local branch=$(eval echo $@)
 	local path=$(__cm_db_node_to_path $branch)
 	for leaf_name in $( ls -1 $path); do
-		__cm_db_is_leaf "$branch $leaf_name"
+		__cm_db_is_leaf $branch $leaf_name
 		if [ $? == 0 ]; then
-			priority=$(__cm_get_command_priority "$branch $leaf_name")
+			local command=$(eval echo $branch $leaf_name)
+			local priority=$(__cm_get_command_priority $command)
 			echo "${priority}:$leaf_name"
 			__cm_debug "$leaf_name is a leaf, priority is: $priority"
 		fi
@@ -554,12 +621,15 @@ __cm_db_list_leaf_sorted()
 #@
 __cm_db_is_leaf()
 {
-	local branch=$@
+	# FIXME!!
+	local branch=$(eval echo $@)
 	local path=$(__cm_db_node_to_path $branch)
 	local filename=$(basename $path)
-
+	__cm_debug "Leaf path: $path"
 	[ "${filename:0:1}" == "_" ] && return 1
-	[ -f "$path" ] && return 0 	
+	[ -f "$path" ] && return 0 
+	__cm_debug "NOt a leaf"
+	return 1 
 }
 
 #@.. function:: __cm_db_show_tree([branch_path])
@@ -572,20 +642,26 @@ __cm_db_show_tree()
 {
 	local tree=
 	if [ -n "$@" ]; then
-		tree="$@"
-	fi
-	OIFS=$IFS
-	IFS=$'\n'
+		tree=$(eval echo $@)
+	fi 
+	local OIFS=$IFS
+	local IFS=$'\n'
 	for branch in $(__cm_db_list_nodes_sorted $tree); do
+		__cm_debug "Branch $branch"
 		for leaf_name in $(__cm_db_list_leaf_sorted $branch); do
-			__cm_db_is_leaf "$branch $leaf_name"
-			[ $? == 1 ] && continue
-			val=$(__cm_db_get_leaf "$branch $leaf_name")
-			for v in $val; do
-				__cm_debug "Leaf: $branch ${leaf_name}, value: $v"
-				echo "$branch $leaf_name $v"
-			done
-			[ -z "${val}" ] && echo "$branch $leaf_name"
+			__cm_debug "LEAF $leaf_name"
+			if __cm_db_is_leaf $branch $leaf_name; then
+				__cm_debug "\"$branch $leaf_name\" is not a leaf" 
+				command=$(eval echo $branch $leaf_name)
+				val=$(__cm_db_get_leaf $command)
+				for v in $val; do
+					__cm_debug "Leaf: $branch ${leaf_name}, value: $v"
+					echo "$branch $leaf_name $v"
+				done
+				[ -z "${val}" ] && echo "$branch $leaf_name"
+			else
+				continue
+			fi
 		done
 		__cm_db_show_tree $branch
 	done
@@ -601,8 +677,8 @@ __cm_db_show_tree()
 #@
 __cm_db_remove_leaf()
 {
-	local leaf_path=$@
-	local leaf_path_in_db="$__cm_db_dir"/"${leaf_path// //}"
+	local leaf_path=$(eval echo $@)
+	local leaf_path_in_db=$(__cm_db_node_to_path $leaf_path)
 	if [ -f "$leaf_path_in_db" ]; then
 		rm -f "$leaf_path_in_db"
 	else
@@ -639,8 +715,8 @@ __cm_db_remove_branch()
 #@
 __cm_show_conf()
 {
-	OIFS=$IFS
-	IFS=$'\n'
+	local OIFS=$IFS
+	local IFS=$'\n'
 
 	for conf in $(__cm_db_show_tree $@); do
         	echo $__cm_bin $conf

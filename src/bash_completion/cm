@@ -63,7 +63,8 @@ __cm_complete()
 		COMPREPLY=($(compgen -W "$(__cm_list_node)" -- "$cur" ))
 		return
 	fi
-
+	
+	
 	# command is a tag
 	__cm_is_command_tag $opts
 	if [ "$?" == "0" ]; then

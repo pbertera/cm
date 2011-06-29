@@ -27,7 +27,7 @@ for node in $@; do
 	
 done
 
-if [ -x "$command_path" ]; then
+if __cm_is_command_leaf $command; then
 	if [ "$param" == "?" ];then
 		__cm_debug "Executing ${command_path_dir}/_${command_name}_help $command"
 		if [ -x "${command_path_dir}/_${command_name}_help" ];then
@@ -39,7 +39,10 @@ if [ -x "$command_path" ]; then
 		fi
 	else
 		__cm_debug "Checking syntax: "
+		__cm_check_nodes_syntax $@
 		${command_path_dir}/_${command_name}_syntax $@ || __cm_exit_error "Invalid syntax"
+		__cm_debug "Run tagged node"
+		__cm_exec_tag_nodes $@
 		__cm_debug "Executing $command_path $@"
 		$command_path $@
 	fi

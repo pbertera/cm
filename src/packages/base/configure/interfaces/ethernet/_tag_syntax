@@ -1,0 +1,14 @@
+#!/bin/bash
+
+. ${__cm_lib_dir}/cmlib
+. ${__cm_lib_dir}/cmcheck
+
+if [ $__cm_no_command ]; then
+	__cm_db_list_nodes_sorted interfaces ethernet | grep "interfaces ethernet $3" > /dev/null 2>&1
+else
+	if is_valid_iface $3; then
+		exit 0
+	fi
+         __cm_exit_error "Invalid network interface"
+fi
+
